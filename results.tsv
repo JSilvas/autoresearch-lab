@@ -2,3 +2,4 @@ commit	val_bpb	memory_gb	status	description
 21a3463	0.611694	0.0	keep	baseline on M4 Max (DEPTH=4 ASPECT_RATIO=64 239 steps)
 daa6b22	0.615406	0.0	discard	DEPTH 4->6: more capacity but fewer steps (155 vs 239) hurt more
 57d1a9d	0.650586	0.0	discard	WINDOW_PATTERN L->SSSL: MPS masked attn slower (180 vs 239 steps)
+050ee55	0.669000	0.0	discard	MATRIX_LR 0.09->0.12: too high, instability (167 steps)
