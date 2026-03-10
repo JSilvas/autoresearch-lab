@@ -1,2 +1,3 @@
 commit	val_bpb	memory_gb	status	description
 21a3463	0.611694	0.0	keep	baseline on M4 Max (DEPTH=4 ASPECT_RATIO=64 239 steps)
+daa6b22	0.615406	0.0	discard	DEPTH 4->6: more capacity but fewer steps (155 vs 239) hurt more
