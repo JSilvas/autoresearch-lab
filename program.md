@@ -112,3 +112,19 @@ The idea is that you are a completely autonomous researcher trying things out. I
 **NEVER STOP**: Once the experiment loop has begun (after the initial setup), do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to continue working *indefinitely* until you are manually stopped. You are autonomous. If you run out of ideas, think harder — read papers referenced in the code, re-read the in-scope files for new angles, try combining previous near-misses, try more radical architectural changes. The loop runs until the human interrupts you, period.
 
 As an example use case, a user might leave you running while they sleep. If each experiment takes you ~5 minutes then you can run approx 12/hour, for a total of about 100 over the duration of the average human sleep. The user then wakes up to experimental results, all completed by you while they slept!
+
+
+## Research Strategy
+
+### Research Direction: Biological Predictive Coding (PC)
+1. **Hierarchical Error Minimization**: Implement layers that attempt to predict the activity of the layer below.
+2. **Weight-Tied PC**: Experiment with sharing weights across time steps (Recurrent Transformers) to see if PC principles allow for fewer total parameters to achieve the same generalization.
+3. **Delta-Encoding**: Only perform Attention/MLP operations on tokens where the "Surprise" (KL Divergence from a moving average) exceeds a certain threshold.
+
+### Training Hardware Considerations
+- Constraint-Aware Design: "The target hardware has 32GB Unified Memory. Prioritize architectures with high memory efficiency. Avoid scaling 
+ beyond 1024; focus on depth and attention variants instead."
+- Precision: Force bfloat16 or float16 to leverage the M2's neural engine/GPU efficiency.
+- Micro-Batching: use Gradient Accumulation. This should allow simulating larger "effective" batch sizes without exceeding the M2 Macbook's limited 32GB unified RAM.
+- Alternative Attention: "Explore alternatives to standard Softmax attention, such as Linear Attention, Sliding Window Attention, or Grouped Query Attention (GQA) to reduce the KV cache footprint."
+- MoE Exploration: "Investigate Sparsely Gated Mixture of Experts (MoE). Use many small experts (e.g., 8-16) with top-1 or top-2 routing to keep active parameters low while increasing total capacity."

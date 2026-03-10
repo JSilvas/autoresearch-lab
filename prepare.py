@@ -15,7 +15,6 @@ import time
 import math
 import argparse
 import pickle
-from multiprocessing import Pool
 
 import requests
 import pyarrow.parquet as pq
@@ -49,9 +48,10 @@ EVAL_TOKENS = 40 * 524288  # number of tokens for val eval
 CACHE_DIR = os.path.join(os.path.expanduser("~"), ".cache", "autoresearch")
 DATA_DIR = os.path.join(CACHE_DIR, "data")
 TOKENIZER_DIR = os.path.join(CACHE_DIR, "tokenizer")
-BASE_URL = "https://huggingface.co/datasets/karpathy/climbmix-400b-shuffle/resolve/main"
-MAX_SHARD = 6542 # the last datashard is shard_06542.parquet
-VAL_SHARD = MAX_SHARD  # pinned validation shard (shard_06542)
+BASE_URL = "https://huggingface.co/datasets/karpathy/tinystories-gpt4-clean/resolve/main"
+TINYSTORIES_FILENAME = "tinystories_gpt4_clean.parquet"
+MAX_SHARD = 1  # shard_00000 = train, shard_00001 = val
+VAL_SHARD = 1  # pinned validation shard (shard_00001)
 VAL_FILENAME = f"shard_{VAL_SHARD:05d}.parquet"
 VOCAB_SIZE = 8192
 
@@ -65,63 +65,54 @@ BOS_TOKEN = "<|reserved_0|>"
 # Data download
 # ---------------------------------------------------------------------------
 
-def download_single_shard(index):
-    """Download one parquet shard with retries. Returns True on success."""
-    filename = f"shard_{index:05d}.parquet"
-    filepath = os.path.join(DATA_DIR, filename)
-    if os.path.exists(filepath):
-        return True
-
-    url = f"{BASE_URL}/{filename}"
-    max_attempts = 5
-    for attempt in range(1, max_attempts + 1):
-        try:
-            response = requests.get(url, stream=True, timeout=30)
-            response.raise_for_status()
-            temp_path = filepath + ".tmp"
-            with open(temp_path, "wb") as f:
-                for chunk in response.iter_content(chunk_size=1024 * 1024):
-                    if chunk:
-                        f.write(chunk)
-            os.rename(temp_path, filepath)
-            print(f"  Downloaded {filename}")
-            return True
-        except (requests.RequestException, IOError) as e:
-            print(f"  Attempt {attempt}/{max_attempts} failed for {filename}: {e}")
-            for path in [filepath + ".tmp", filepath]:
-                if os.path.exists(path):
-                    try:
-                        os.remove(path)
-                    except OSError:
-                        pass
-            if attempt < max_attempts:
-                time.sleep(2 ** attempt)
-    return False
-
-
 def download_data(num_shards, download_workers=8):
-    """Download training shards + pinned validation shard."""
+    """Download TinyStories and split into train (shard_00000) and val (shard_00001)."""
     os.makedirs(DATA_DIR, exist_ok=True)
-    num_train = min(num_shards, MAX_SHARD)
-    ids = list(range(num_train))
-    if VAL_SHARD not in ids:
-        ids.append(VAL_SHARD)
+    train_path = os.path.join(DATA_DIR, "shard_00000.parquet")
+    val_path = os.path.join(DATA_DIR, VAL_FILENAME)
 
-    # Count what's already downloaded
-    existing = sum(1 for i in ids if os.path.exists(os.path.join(DATA_DIR, f"shard_{i:05d}.parquet")))
-    if existing == len(ids):
-        print(f"Data: all {len(ids)} shards already downloaded at {DATA_DIR}")
+    if os.path.exists(train_path) and os.path.exists(val_path):
+        print(f"Data: train and val shards already exist at {DATA_DIR}")
         return
 
-    needed = len(ids) - existing
-    print(f"Data: downloading {needed} shards ({existing} already exist)...")
+    # Download raw file
+    raw_path = os.path.join(DATA_DIR, TINYSTORIES_FILENAME)
+    if not os.path.exists(raw_path):
+        url = f"{BASE_URL}/{TINYSTORIES_FILENAME}"
+        print(f"Data: downloading {TINYSTORIES_FILENAME} (~673MB)...")
+        max_attempts = 5
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = requests.get(url, stream=True, timeout=60)
+                response.raise_for_status()
+                temp_path = raw_path + ".tmp"
+                with open(temp_path, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+                os.rename(temp_path, raw_path)
+                print(f"  Downloaded {TINYSTORIES_FILENAME}")
+                break
+            except (requests.RequestException, IOError) as e:
+                print(f"  Attempt {attempt}/{max_attempts} failed: {e}")
+                for path in [raw_path + ".tmp", raw_path]:
+                    if os.path.exists(path):
+                        try: os.remove(path)
+                        except OSError: pass
+                if attempt < max_attempts:
+                    time.sleep(2 ** attempt)
+                else:
+                    raise
 
-    workers = max(1, min(download_workers, needed))
-    with Pool(processes=workers) as pool:
-        results = pool.map(download_single_shard, ids)
-
-    ok = sum(1 for r in results if r)
-    print(f"Data: {ok}/{len(ids)} shards ready at {DATA_DIR}")
+    # Split into train / val shards
+    print("Data: splitting into train/val shards...")
+    table = pq.read_table(raw_path)
+    n = len(table)
+    val_size = 100_000  # ~3.7% of 2.7M stories; enough for ~20M eval tokens
+    pq.write_table(table.slice(0, n - val_size), train_path)
+    pq.write_table(table.slice(n - val_size), val_path)
+    os.remove(raw_path)
+    print(f"Data: train={n - val_size:,} rows, val={val_size:,} rows at {DATA_DIR}")
 
 # ---------------------------------------------------------------------------
 # Tokenizer training
