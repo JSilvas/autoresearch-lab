@@ -517,11 +517,8 @@ device = torch.device(device_type)
 # Autocast context
 if device_type == "cuda":
     autocast_ctx = torch.amp.autocast(device_type="cuda", dtype=torch.bfloat16)
-elif device_type == "cpu":
-    autocast_ctx = torch.amp.autocast(device_type="cpu", dtype=torch.bfloat16)
 else:
-    import contextlib
-    autocast_ctx = contextlib.nullcontext()
+    autocast_ctx = torch.amp.autocast(device_type="cpu", dtype=torch.bfloat16)
 
 H100_BF16_PEAK_FLOPS = 989.5e12
 
