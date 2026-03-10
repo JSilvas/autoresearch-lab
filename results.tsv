@@ -1,3 +1,1 @@
 commit	val_bpb	memory_gb	status	description
-8c616e2	0.689038	0.0	keep	baseline
-a56174a	0.692377	0.0	discard	bfloat16 autocast on MPS via cpu device (no throughput gain)
