@@ -116,15 +116,50 @@ As an example use case, a user might leave you running while they sleep. If each
 
 ## Research Strategy
 
-### Research Direction: Biological Predictive Coding (PC)
-1. **Hierarchical Error Minimization**: Implement layers that attempt to predict the activity of the layer below.
-2. **Weight-Tied PC**: Experiment with sharing weights across time steps (Recurrent Transformers) to see if PC principles allow for fewer total parameters to achieve the same generalization.
-3. **Delta-Encoding**: Only perform Attention/MLP operations on tokens where the "Surprise" (KL Divergence from a moving average) exceeds a certain threshold.
+### What We're Actually Doing
 
-### Training Hardware Considerations
-- Constraint-Aware Design: "The target hardware has 32GB Unified Memory. Prioritize architectures with high memory efficiency. Avoid scaling 
- beyond 1024; focus on depth and attention variants instead."
-- Precision: Force bfloat16 or float16 to leverage the M2's neural engine/GPU efficiency.
-- Micro-Batching: use Gradient Accumulation. This should allow simulating larger "effective" batch sizes without exceeding the M2 Macbook's limited 32GB unified RAM.
-- Alternative Attention: "Explore alternatives to standard Softmax attention, such as Linear Attention, Sliding Window Attention, or Grouped Query Attention (GQA) to reduce the KV cache footprint."
-- MoE Exploration: "Investigate Sparsely Gated Mixture of Experts (MoE). Use many small experts (e.g., 8-16) with top-1 or top-2 routing to keep active parameters low while increasing total capacity."
+The training objective — minimizing val_bpb — is equivalent to minimizing *surprise*: how many bits the model needs to encode each byte of held-out text, given everything it has seen before. Lower val_bpb means the model's learned priors better predict the structure of the data.
+
+The model weights ARE the prior. They encode the statistical structure of TinyStories — not specific stories, but the underlying patterns: what kinds of phrases follow what kinds of phrases, what narrative structures recur, how children's story language behaves. Training is the process of updating that prior until surprises (residuals between prediction and reality) are minimized. Once trained, generation works by repeatedly sampling the least-surprising next token — the model projects forward from its learned priors.
+
+This framing — weights as prior, forward pass as inference, loss as surprise — is the Bayesian/free energy view (Friston), and it directly motivates the architectural experiments below.
+
+### Research Direction: Predictive Coding (PC) Architecture
+
+The core hypothesis: **conventional transformers process raw input state; PC-inspired transformers should process prediction error (surprise)**.
+
+In a residual transformer, every layer refines the accumulated representation. There is no separation between "what I already knew" and "what just surprised me." Biological cortex works differently — well-predicted inputs are handled cheaply by trained circuits; only deviations from expectation demand expensive attention-level processing. This is why biological brains are far more energy-efficient: they route capacity proportional to surprise.
+
+**The fundamental inversion:**
+- Standard: `x = layer(x)` — refine the state
+- PC: `error = x - prior_prediction(x)` → `x = layer(error)` — process the surprise
+
+**Experiments to run, ordered least to most invasive:**
+
+1. **Prior-Subtraction Residual**: The current `x0_lambdas * x0` skip *adds* the initial embedding — it should instead *subtract* it (remove the prior, leave the error). Change: `surprise = x - x0_lambdas[i] * x0`, then feed `surprise` to the block.
+
+2. **Learned Hierarchical Top-Down Priors**: Replace the flat x0 skip with per-layer learned projections `nn.Linear(n_embd, n_embd)(x0)`. Each layer learns which aspect of the initial embedding to "explain away" at its depth. Shallower layers explain surface statistics; deeper layers explain narrative structure.
+
+3. **Error-Unit Architecture (bold)**: Add per-layer self-predictors. Each layer predicts its own input; the block processes the error only. Only unpredicted information propagates. Well-predicted tokens contribute near-zero signal — sparsity emerges naturally.
+
+4. **Surprise-Biased Attention**: Add prediction error magnitude as a learned bias on attention logits. High-error tokens receive more attention — salience-driven routing rather than similarity-driven. Biologically: saccades jump to high-error regions.
+
+5. **Auxiliary PC Loss**: Add a precision-weighted reconstruction loss requiring each layer to be predictable from the layer above. Keeps backprop; adds local PC self-supervision. `L_total = L_ce + λ * Σ (1/σ²_i) * ||h_i - W_pred(h_{i+1})||²`
+
+When evaluating whether a PC change is "worth it" (see simplicity criterion above), weight the val_bpb improvement against how much complexity it adds. A clean inversion that helps a little is better than a messy one that helps a lot.
+
+### MPS Hardware Constraints (M4 Max, 64GB Unified Memory)
+
+Discovered empirically — respect these or throughput collapses:
+
+- **DEVICE_BATCH_SIZE=32**: Do not go below. MPS falls below efficient GPU utilization at 16 (191 steps vs 272).
+- **TOTAL_BATCH_SIZE=2^16**: Sweet spot. Smaller hurts (fewer steps, noisier), larger unclear.
+- **HEAD_DIM=128**: Do not reduce. Smaller matrix dims (64) reduce MPS throughput.
+- **WINDOW_PATTERN="L"**: Do not use sliding window (SSSL etc). Masked SDPA is *slower* on MPS than full causal — no FlashAttention 3 on MPS.
+- **No bfloat16 autocast**: MPS doesn't support it well. Already handled in code.
+- **No torch.compile**: Disabled for MPS in train.py. Do not re-enable.
+- **Thermal throttling**: Consecutive runs may produce 15-20% step count variance. Don't over-interpret small differences.
+
+Best known hyperparameters (as of mar10-m4max, val_bpb=0.594614):
+- MATRIX_LR=0.09, WARMDOWN_RATIO=0.35, FINAL_LR_FRAC=0.0
+- DEPTH=4, ASPECT_RATIO=64 (model_dim=256, n_head=2), HEAD_DIM=128
