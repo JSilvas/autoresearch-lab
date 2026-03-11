@@ -38,3 +38,6 @@ f62f5c9	0.712124	0.0	discard	WARMDOWN_RATIO 0.35->0.40: 0.35 confirmed as optimu
 bbffa12	0.713645	0.0	discard	ns_steps 7->9: compute overhead hurts, 7 is optimal
 28ff0ff	2.318383	0.0	discard	weight tying wte/lm_head: LR mismatch destroys training
 a87d62c	0.729996	0.0	discard	softcap 25->50: fewer steps and worse quality
+0fcb89d	0.698599	0.0	keep	remove softcap: +12 steps and +0.011 improvement — softcap was hurting
+8df005b	0.705472	0.0	discard	MATRIX_LR 0.10->0.11 (post-softcap): 0.10 still optimal
+a0c3612	0.699487	0.0	discard	EMBEDDING_LR 0.6->0.9: marginally worse, 0.6 confirmed optimal
