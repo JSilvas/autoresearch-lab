@@ -20,3 +20,5 @@ b77e7fd	0.611030	0.0	discard	WARMDOWN_RATIO 0.35->0.30: 0.35 confirmed as optimu
 d20ab66	0.731487	0.0	discard	NorMuon beta2 0.85: marginally worse, 0.90 confirmed as optimum
 da19053	0.763778	0.0	discard	ns_steps 5->3: update quality matters more than extra steps
 50afd88	0.732965	0.0	discard	constant WD 0.2: decaying WD slightly better (0.003)
+e09b614	0.734591	0.0	discard	cosine warmdown: linear slightly better (0.005)
+5380b24	0.753701	0.0	discard	GQA n_kv_head=1: head diversity loss hurts more than compute savings
