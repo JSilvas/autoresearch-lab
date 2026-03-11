@@ -28,3 +28,4 @@ bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying
 4a24524	0.769577	0.0	discard	DEPTH=5 ASPECT_RATIO=51: extra layer costs steps (101 vs 127), depth=4 optimal
 22615e7	0.726102	0.0	discard	x0_lambdas init 0.3: marginally worse than 0.1 (118 vs 127 steps)
 80ce8f2	0.731778	0.0	discard	ADAM_BETAS beta2 0.90: Adam beta2=0.95 better (Muon insight doesn't transfer)
+1ef54ef	0.741999	0.0	discard	EMBEDDING_LR 0.6->0.3: higher embedding LR better
