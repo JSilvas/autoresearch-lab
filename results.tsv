@@ -24,3 +24,5 @@ e09b614	0.734591	0.0	discard	cosine warmdown: linear slightly better (0.005)
 5380b24	0.753701	0.0	discard	GQA n_kv_head=1: head diversity loss hurts more than compute savings
 0e3280f	0.723945	0.0	keep	MATRIX_LR 0.09->0.10: improved optimizer supports higher LR (+6 steps +0.005)
 5848c45	0.739188	0.0	discard	MATRIX_LR 0.11: too high, 0.10 confirmed as optimum
+bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying effect valuable)
+4a24524	0.769577	0.0	discard	DEPTH=5 ASPECT_RATIO=51: extra layer costs steps (101 vs 127), depth=4 optimal
