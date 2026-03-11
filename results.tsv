@@ -52,3 +52,21 @@ a7a2fa4	0.701154	0.0	discard	all-layers VE (4 layers vs 2): alternating is optim
 77a8a16	0.701381	0.0	discard	gradient clipping max_norm=1.0: hurts (not needed without softcap)
 cacadb0	0.689280	0.0	keep	lm_head init std 0.001->0.01: +0.009 improvement (under-initialized before)
 fd6dcde	0.703852	0.0	discard	lm_head init std 0.01->0.1: too large, 0.01 is optimal
+c519344	0.688288	0.0	keep	MATRIX_LR 0.10->0.11 (post-lm_head-init): improved optimizer supports higher LR
+597b45a	0.695874	0.0	discard	MATRIX_LR 0.11->0.12: too high, 0.11 confirmed as optimum
+f414acd	0.691445	0.0	discard	MLP hidden 4x->3x: 4x optimal (sparsifying effect valuable)
+6d4c548	0.688280	0.0	discard	c_proj init zeros->N(0,0.001): delta=0.000008, effectively same
+ac23d39	0.698159	0.0	discard	x0_lambdas init 0.1->0.0: much worse, x0 skip critical
+cf289c3	0.685831	0.0	keep	Muon momentum start 0.85->0.80: more reactive early updates (+0.002)
+b7c71be	0.683882	0.0	keep	Muon momentum start 0.80->0.75: even more reactive (+0.002)
+ba99bc5	0.685689	0.0	discard	Muon momentum start 0.75->0.70: 0.75 confirmed as optimum
+92f036a	0.685055	0.0	discard	EMBEDDING_LR 0.6->0.4: 0.6 confirmed optimal
+b9be91a	0.693370	0.0	discard	ve_gate_channels 32->n_embd: full context for gate hurts
+bcce293	0.677608	0.0	keep	Muon momentum target 0.95->0.90: lower final momentum (+0.006)
+bf05218	0.678933	0.0	discard	Muon momentum target 0.90->0.85: 0.90 confirmed as optimum
+d9e9f76	0.685712	0.0	discard	constant momentum 0.82: ramp is important, discard
+47c27de	0.682464	0.0	discard	momentum ramp 50->75 steps: 50 steps confirmed optimal
+200c828	0.683171	0.0	discard	MATRIX_LR 0.11->0.12 (post-momentum): 0.11 still optimal
+4e467ab	0.680495	0.0	discard	NorMuon beta2 0.90->0.85: 0.90 confirmed as optimum
+d31abe3	0.679268	0.0	discard	WARMDOWN_RATIO 0.35->0.30 (post-momentum): 0.35 confirmed
+a26155c	0.680079	0.0	discard	x0_lambdas init 0.1->0.2: 0.1 confirmed as optimum
