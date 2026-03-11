@@ -589,7 +589,7 @@ def get_lr_multiplier(progress):
 
 def get_muon_momentum(step):
     frac = min(step / 50, 1)  # reach 0.95 by step 50, not 300 (ramp fits budget)
-    return (1 - frac) * 0.75 + frac * 0.95
+    return (1 - frac) * 0.75 + frac * 0.90
 
 def get_weight_decay(progress):
     return WEIGHT_DECAY * (1 - progress)
