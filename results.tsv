@@ -30,3 +30,7 @@ bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying
 80ce8f2	0.731778	0.0	discard	ADAM_BETAS beta2 0.90: Adam beta2=0.95 better (Muon insight doesn't transfer)
 1ef54ef	0.741999	0.0	discard	EMBEDDING_LR 0.6->0.3: higher embedding LR better
 9900479	0.713818	0.0	keep	WEIGHT_DECAY 0.2->0.3: stronger regularization with MATRIX_LR=0.10 (+3 steps +0.010)
+44a8ee8	0.711630	0.0	keep	WEIGHT_DECAY 0.3->0.4: marginal improvement (+1 step, +0.002)
+50e5219	0.712613	0.0	discard	WEIGHT_DECAY 0.4->0.5: slightly worse, 0.4 confirmed as optimum
+f62f5c9	0.712124	0.0	discard	WARMDOWN_RATIO 0.35->0.40: 0.35 confirmed as optimum
+3aa6113	0.732644	0.0	discard	Muon momentum ramp 50->25 steps: worse, 50 steps remains optimal
