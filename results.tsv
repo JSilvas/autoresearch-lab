@@ -11,3 +11,5 @@ e254e82	0.635375	0.0	discard	HEAD_DIM 128->64: smaller dims less efficient on MP
 3ee44b6	0.683357	0.0	discard	batch 2^16->2^15: MPS throughput collapses at small batch
 57bf5e9	0.617754	0.0	discard	ADAM_BETAS (0.8->0.9): reactive beta1=0.8 better for short runs
 b77e7fd	0.611030	0.0	discard	WARMDOWN_RATIO 0.35->0.30: 0.35 confirmed as optimum
+823590b	0.706650	0.0	discard	PC prior-subtraction (buggy: double-count) — 126 steps
+877b9eb	0.755670	0.0	discard	PC prior-subtraction (fixed) — 101 steps; signal decays across layers
