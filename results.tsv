@@ -22,3 +22,5 @@ da19053	0.763778	0.0	discard	ns_steps 5->3: update quality matters more than ext
 50afd88	0.732965	0.0	discard	constant WD 0.2: decaying WD slightly better (0.003)
 e09b614	0.734591	0.0	discard	cosine warmdown: linear slightly better (0.005)
 5380b24	0.753701	0.0	discard	GQA n_kv_head=1: head diversity loss hurts more than compute savings
+0e3280f	0.723945	0.0	keep	MATRIX_LR 0.09->0.10: improved optimizer supports higher LR (+6 steps +0.005)
+5848c45	0.739188	0.0	discard	MATRIX_LR 0.11: too high, 0.10 confirmed as optimum
