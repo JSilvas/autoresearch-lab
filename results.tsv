@@ -29,3 +29,4 @@ bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying
 22615e7	0.726102	0.0	discard	x0_lambdas init 0.3: marginally worse than 0.1 (118 vs 127 steps)
 80ce8f2	0.731778	0.0	discard	ADAM_BETAS beta2 0.90: Adam beta2=0.95 better (Muon insight doesn't transfer)
 1ef54ef	0.741999	0.0	discard	EMBEDDING_LR 0.6->0.3: higher embedding LR better
+9900479	0.713818	0.0	keep	WEIGHT_DECAY 0.2->0.3: stronger regularization with MATRIX_LR=0.10 (+3 steps +0.010)
