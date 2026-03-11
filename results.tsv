@@ -50,3 +50,5 @@ aa6d158	0.699086	0.0	discard	ADAM_BETAS beta1 0.8->0.7: marginally worse, 0.8 op
 e0ce6af	0.752035	0.0	discard	remove value embeddings: VE are critical (+0.054 worse)
 a7a2fa4	0.701154	0.0	discard	all-layers VE (4 layers vs 2): alternating is optimal
 77a8a16	0.701381	0.0	discard	gradient clipping max_norm=1.0: hurts (not needed without softcap)
+cacadb0	0.689280	0.0	keep	lm_head init std 0.001->0.01: +0.009 improvement (under-initialized before)
+fd6dcde	0.703852	0.0	discard	lm_head init std 0.01->0.1: too large, 0.01 is optimal
