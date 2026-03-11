@@ -26,3 +26,5 @@ e09b614	0.734591	0.0	discard	cosine warmdown: linear slightly better (0.005)
 5848c45	0.739188	0.0	discard	MATRIX_LR 0.11: too high, 0.10 confirmed as optimum
 bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying effect valuable)
 4a24524	0.769577	0.0	discard	DEPTH=5 ASPECT_RATIO=51: extra layer costs steps (101 vs 127), depth=4 optimal
+22615e7	0.726102	0.0	discard	x0_lambdas init 0.3: marginally worse than 0.1 (118 vs 127 steps)
+80ce8f2	0.731778	0.0	discard	ADAM_BETAS beta2 0.90: Adam beta2=0.95 better (Muon insight doesn't transfer)
