@@ -18,3 +18,5 @@ b77e7fd	0.611030	0.0	discard	WARMDOWN_RATIO 0.35->0.30: 0.35 confirmed as optimu
 9c01975	0.774554	0.0	discard	Exp B: per-layer x0 projectors — slower steps, no gain vs momentum ramp
 5446086	0.729131	0.0	keep	NorMuon beta2 0.95->0.90: faster variance adapt — +16 steps, +0.032 improvement
 d20ab66	0.731487	0.0	discard	NorMuon beta2 0.85: marginally worse, 0.90 confirmed as optimum
+da19053	0.763778	0.0	discard	ns_steps 5->3: update quality matters more than extra steps
+50afd88	0.732965	0.0	discard	constant WD 0.2: decaying WD slightly better (0.003)
