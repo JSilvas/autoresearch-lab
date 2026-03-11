@@ -15,3 +15,4 @@ b77e7fd	0.611030	0.0	discard	WARMDOWN_RATIO 0.35->0.30: 0.35 confirmed as optimu
 877b9eb	0.755670	0.0	discard	PC prior-subtraction (fixed) — 101 steps; signal decays across layers
 5f1f450	0.761418	0.0	keep	Muon momentum ramp 300->50 steps: +8 steps vs thermal control (0.761 vs 0.785)
 4280ef7	0.809371	0.0	discard	Muon momentum constant 0.95: worse than ramp (too conservative at start)
+9c01975	0.774554	0.0	discard	Exp B: per-layer x0 projectors — slower steps, no gain vs momentum ramp
