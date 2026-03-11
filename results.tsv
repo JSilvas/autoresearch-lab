@@ -41,3 +41,12 @@ a87d62c	0.729996	0.0	discard	softcap 25->50: fewer steps and worse quality
 0fcb89d	0.698599	0.0	keep	remove softcap: +12 steps and +0.011 improvement — softcap was hurting
 8df005b	0.705472	0.0	discard	MATRIX_LR 0.10->0.11 (post-softcap): 0.10 still optimal
 a0c3612	0.699487	0.0	discard	EMBEDDING_LR 0.6->0.9: marginally worse, 0.6 confirmed optimal
+6241a6c	0.698413	0.0	keep	WEIGHT_DECAY 0.4->0.5 (post-softcap): tiny marginal gain
+20b3ca0	0.699735	0.0	discard	WEIGHT_DECAY 0.5->0.6: worse, 0.5 confirmed as optimum
+3a54b61	0.707199	0.0	discard	UNEMBEDDING_LR 0.004->0.02: lm_head LR fine at 0.004
+f455cd9	0.699546	0.0	discard	RoPE base 10000->1000: marginally worse, 10000 stays
+ec593d0	0.000000	0.0	crash	DEVICE_BATCH_SIZE 32->64: crashes (64*2048 > TOTAL_BATCH_SIZE=2^16)
+aa6d158	0.699086	0.0	discard	ADAM_BETAS beta1 0.8->0.7: marginally worse, 0.8 optimal
+e0ce6af	0.752035	0.0	discard	remove value embeddings: VE are critical (+0.054 worse)
+a7a2fa4	0.701154	0.0	discard	all-layers VE (4 layers vs 2): alternating is optimal
+77a8a16	0.701381	0.0	discard	gradient clipping max_norm=1.0: hurts (not needed without softcap)
