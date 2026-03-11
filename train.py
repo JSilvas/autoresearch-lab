@@ -297,9 +297,10 @@ class GPT(nn.Module):
         x = norm(x)
         x0 = x
         for i, block in enumerate(self.transformer.h):
-            x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
+            prior = self.x0_lambdas[i] * x0
+            x_in = self.resid_lambdas[i] * x - prior  # block sees error (x minus prior)
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
-            x = block(x, ve, cos_sin, self.window_sizes[i])
+            x = block(x_in, ve, cos_sin, self.window_sizes[i]) + prior  # prior bypasses block
         x = norm(x)
 
         logits = self.lm_head(x)
