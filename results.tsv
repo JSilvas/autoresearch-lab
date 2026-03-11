@@ -3,3 +3,11 @@ commit	val_bpb	memory_gb	status	description
 daa6b22	0.615406	0.0	discard	DEPTH 4->6: more capacity but fewer steps (155 vs 239) hurt more
 57d1a9d	0.650586	0.0	discard	WINDOW_PATTERN L->SSSL: MPS masked attn slower (180 vs 239 steps)
 050ee55	0.669000	0.0	discard	MATRIX_LR 0.09->0.12: too high, instability (167 steps)
+ee06b4d	0.594614	0.0	keep	WARMDOWN_RATIO 0.5->0.35: best so far (+0.017 vs baseline)
+59626d5	0.615981	0.0	discard	WARMDOWN_RATIO 0.35->0.2: too short, overshoots
+07a4a04	0.610738	0.0	discard	FINAL_LR_FRAC 0.0->0.05: non-zero floor hurts
+e254e82	0.635375	0.0	discard	HEAD_DIM 128->64: smaller dims less efficient on MPS
+1c0bf7f	0.613729	0.0	discard	WEIGHT_DECAY 0.2->0.1: regularization is helpful
+3ee44b6	0.683357	0.0	discard	batch 2^16->2^15: MPS throughput collapses at small batch
+57bf5e9	0.617754	0.0	discard	ADAM_BETAS (0.8->0.9): reactive beta1=0.8 better for short runs
+b77e7fd	0.611030	0.0	discard	WARMDOWN_RATIO 0.35->0.30: 0.35 confirmed as optimum
