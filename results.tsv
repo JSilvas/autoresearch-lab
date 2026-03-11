@@ -34,3 +34,7 @@ bba607d	0.751980	0.0	discard	SwiGLU hidden=640: relu² at 4x better (sparsifying
 50e5219	0.712613	0.0	discard	WEIGHT_DECAY 0.4->0.5: slightly worse, 0.4 confirmed as optimum
 f62f5c9	0.712124	0.0	discard	WARMDOWN_RATIO 0.35->0.40: 0.35 confirmed as optimum
 3aa6113	0.732644	0.0	discard	Muon momentum ramp 50->25 steps: worse, 50 steps remains optimal
+0899ffc	0.709339	0.0	keep	ns_steps 5->7: better orthogonalization quality (+0.002 improvement)
+bbffa12	0.713645	0.0	discard	ns_steps 7->9: compute overhead hurts, 7 is optimal
+28ff0ff	2.318383	0.0	discard	weight tying wte/lm_head: LR mismatch destroys training
+a87d62c	0.729996	0.0	discard	softcap 25->50: fewer steps and worse quality
