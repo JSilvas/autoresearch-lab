@@ -82,3 +82,4 @@ e9e6888	1.401901	0.0	keep	FINAL_LR_FRAC 0.05->0.08 (higher floor with long warmd
 f99a240	1.402997	0.0	discard	FINAL_LR_FRAC 0.08->0.12 (0.08 sweet spot)
 c336b04	1.402655	0.0	discard	WARMDOWN_RATIO 0.45->0.40 with FINAL_LR_FRAC=0.08 (0.45 still best)
 7d727e5	1.417566	0.0	discard	RoPE base 10000->1000 (too compact)
+f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still best)
