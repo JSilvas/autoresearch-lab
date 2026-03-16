@@ -63,3 +63,4 @@ c1f0786	1.415470	0.0	discard	MATRIX_LR 0.08->0.07 with momentum=0.80 (0.08 still
 bd61e57	1.413313	0.0	discard	WARMDOWN_RATIO 0.35->0.25 with momentum=0.80 (0.35 still best)
 9d2203e	1.411823	0.0	discard	FINAL_LR_FRAC 0.05->0.0 with momentum=0.80 (0.05 better)
 55146ec	1.411021	0.0	discard	NorMuon beta2 0.95->0.90 (0.95 still better)
+2ebd979	1.410215	0.0	discard	WEIGHT_DECAY 0.2->0.15 with momentum=0.80 (0.2 better)
