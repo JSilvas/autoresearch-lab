@@ -90,3 +90,4 @@ f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still
 4ef746f	1.403197	0.0	discard	remove resid_lambdas (resid scaling slightly helps)
 322bd73	1.405200	0.0	discard	VE_LR = 2x EMBEDDING_LR (same LR better)
 57a75b6	1.462461	0.0	discard	Muon momentum 0.80->0.0 (momentum essential)
+07510af	1.444538	0.0	discard	sandwich norm post-block outputs (slower + worse)
