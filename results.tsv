@@ -88,3 +88,4 @@ f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still
 322b0a2	1.402131	0.0	discard	weight decay drops to 0 at 50% training (original better)
 0960a3c	1.401952	0.0	discard	WINDOW_PATTERN L->SL (no step gain same quality)
 4ef746f	1.403197	0.0	discard	remove resid_lambdas (resid scaling slightly helps)
+322bd73	1.405200	0.0	discard	VE_LR = 2x EMBEDDING_LR (same LR better)
