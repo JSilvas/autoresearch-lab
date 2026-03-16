@@ -65,3 +65,4 @@ bd61e57	1.413313	0.0	discard	WARMDOWN_RATIO 0.35->0.25 with momentum=0.80 (0.35 
 55146ec	1.411021	0.0	discard	NorMuon beta2 0.95->0.90 (0.95 still better)
 2ebd979	1.410215	0.0	discard	WEIGHT_DECAY 0.2->0.15 with momentum=0.80 (0.2 better)
 31dda42	1.411497	0.0	discard	pure transformer remove x0+resid_lambdas (skip helps)
+4893249	1.412180	0.0	discard	EMBEDDING_LR 0.6->0.5 with momentum=0.80 (0.6 better)
