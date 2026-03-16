@@ -9,3 +9,8 @@ c82aa40	1.542501	0.0	keep	WARMDOWN_RATIO 0.5->0.4
 4d0bc27	1.538107	0.0	keep	WARMDOWN_RATIO 0.4->0.3
 6d99ccb	1.522467	0.0	keep	WARMDOWN_RATIO 0.3->0.2
 2c11dd8	1.521920	0.0	keep	WARMDOWN_RATIO 0.2->0.15
+b7652dc	1.517507	0.0	keep	WARMDOWN_RATIO 0.15->0.1
+038c62d	1.520623	0.0	discard	WARMDOWN_RATIO 0.1->0.05 (0.1 is sweet spot)
+c970bd0	1.602622	0.0	discard	Muon momentum ramp 300->50 steps (worse)
+689b10a	1.545010	0.0	discard	MATRIX_LR 0.08->0.10 (too high)
+f0d12d6	1.545951	0.0	discard	PC prior-subtraction residual (worse)
