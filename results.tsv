@@ -89,3 +89,4 @@ f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still
 0960a3c	1.401952	0.0	discard	WINDOW_PATTERN L->SL (no step gain same quality)
 4ef746f	1.403197	0.0	discard	remove resid_lambdas (resid scaling slightly helps)
 322bd73	1.405200	0.0	discard	VE_LR = 2x EMBEDDING_LR (same LR better)
+57a75b6	1.462461	0.0	discard	Muon momentum 0.80->0.0 (momentum essential)
