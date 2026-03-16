@@ -84,3 +84,4 @@ c336b04	1.402655	0.0	discard	WARMDOWN_RATIO 0.45->0.40 with FINAL_LR_FRAC=0.08 (
 7d727e5	1.417566	0.0	discard	RoPE base 10000->1000 (too compact)
 f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still best)
 6d80a16	1.412820	0.0	discard	SCALAR_LR 0.5->0.3 (0.5 better)
+7f7855b	1.446917	0.0	discard	SCALAR_LR 0.5->0.8 (much worse)
