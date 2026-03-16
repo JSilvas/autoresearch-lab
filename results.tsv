@@ -14,3 +14,6 @@ b7652dc	1.517507	0.0	keep	WARMDOWN_RATIO 0.15->0.1
 c970bd0	1.602622	0.0	discard	Muon momentum ramp 300->50 steps (worse)
 689b10a	1.545010	0.0	discard	MATRIX_LR 0.08->0.10 (too high)
 f0d12d6	1.545951	0.0	discard	PC prior-subtraction residual (worse)
+e633d6f	1.443209	0.0	keep	TOTAL_BATCH_SIZE 2^16->2^15 (283 steps big win)
+c78c61f	0.000000	0.0	crash	TOTAL_BATCH_SIZE 2^14 (smaller than micro-batch)
+2df6326	1.445568	0.0	discard	MATRIX_LR 0.08->0.06 (0.08 still better)
