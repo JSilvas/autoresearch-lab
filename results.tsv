@@ -1,3 +1,7 @@
 commit	val_bpb	memory_gb	status	description
 2f4f20f	1.569680	0.0	keep	baseline: DEPTH=4 climbmix softcap logits
 caaebd5	1.611430	0.0	discard	DEVICE_BATCH_SIZE 16->32 (worse + fewer steps)
+20e8f76	1.554036	0.0	keep	MATRIX_LR 0.04->0.08
+8b6166c	1.587198	0.0	discard	MATRIX_LR 0.08->0.12 (too high)
+f42b1df	1.737296	0.0	discard	DEPTH 4->6 (half steps 76 vs 150 too slow)
+d6e2d07	1.592123	0.0	discard	WEIGHT_DECAY 0.2->0.1 (worse)
