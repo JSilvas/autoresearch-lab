@@ -67,3 +67,4 @@ bd61e57	1.413313	0.0	discard	WARMDOWN_RATIO 0.35->0.25 with momentum=0.80 (0.35 
 31dda42	1.411497	0.0	discard	pure transformer remove x0+resid_lambdas (skip helps)
 4893249	1.412180	0.0	discard	EMBEDDING_LR 0.6->0.5 with momentum=0.80 (0.6 better)
 830777c	1.403234	0.0	keep	ADAM_BETAS beta1 0.8->0.7 (lower smoothing wins)
+3bccb80	1.404650	0.0	discard	ADAM_BETAS beta1 0.7->0.6 (0.7 sweet spot)
