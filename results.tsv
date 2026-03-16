@@ -5,3 +5,4 @@ caaebd5	1.611430	0.0	discard	DEVICE_BATCH_SIZE 16->32 (worse + fewer steps)
 8b6166c	1.587198	0.0	discard	MATRIX_LR 0.08->0.12 (too high)
 f42b1df	1.737296	0.0	discard	DEPTH 4->6 (half steps 76 vs 150 too slow)
 d6e2d07	1.592123	0.0	discard	WEIGHT_DECAY 0.2->0.1 (worse)
+c82aa40	1.542501	0.0	keep	WARMDOWN_RATIO 0.5->0.4
