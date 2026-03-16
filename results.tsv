@@ -74,3 +74,4 @@ cb009ab	1.402362	0.0	discard	WARMDOWN_RATIO 0.45->0.50 (0.45 sweet spot)
 904dcc0	1.404174	0.0	discard	UNEMBEDDING_LR 0.004->0.008 (0.004 better)
 8f6555b	1.404629	0.0	discard	FINAL_LR_FRAC 0.05->0.02 with longer warmdown (0.05 better)
 35cc3cd	1.401995	0.0	keep	MATRIX_LR 0.08->0.09 with new settings
+d4e646b	1.408005	0.0	discard	MATRIX_LR 0.09->0.10 (too high)
