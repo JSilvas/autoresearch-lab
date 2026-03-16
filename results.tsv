@@ -7,3 +7,4 @@ f42b1df	1.737296	0.0	discard	DEPTH 4->6 (half steps 76 vs 150 too slow)
 d6e2d07	1.592123	0.0	discard	WEIGHT_DECAY 0.2->0.1 (worse)
 c82aa40	1.542501	0.0	keep	WARMDOWN_RATIO 0.5->0.4
 4d0bc27	1.538107	0.0	keep	WARMDOWN_RATIO 0.4->0.3
+6d99ccb	1.522467	0.0	keep	WARMDOWN_RATIO 0.3->0.2
