@@ -110,3 +110,4 @@ e3e80aa	1.388107	0.0	keep	WARMDOWN_RATIO 0.45->0.50 with LayerNorm (longer warmd
 0344553	1.388992	0.0	discard	WARMDOWN_RATIO 0.50->0.55 (0.50 sweet spot)
 141fde4	1.388509	0.0	discard	FINAL_LR_FRAC 0.08->0.10 with WARMDOWN=0.50 (0.08 better)
 1801771	1.389174	0.0	discard	ADAM_BETAS beta1 0.7->0.65 with LayerNorm (0.7 better)
+728f4ea	1.392938	0.0	discard	Muon momentum 0.80->0.75 with LayerNorm (0.80 still best)
