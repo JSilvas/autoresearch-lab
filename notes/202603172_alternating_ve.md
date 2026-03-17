@@ -5,6 +5,6 @@
 **Code Change**: `has_ve` returns True only for even-indexed layers from the end (i.e., layers 1 and 3 for DEPTH=4).
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.393200
+**Git Hash**: cfeacbf
+**Verdict**: KEEP. Clear win — +0.013807 improvement. Alternating VE is better than all-layer VE.
