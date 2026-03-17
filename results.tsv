@@ -116,3 +116,4 @@ e3e80aa	1.388107	0.0	keep	WARMDOWN_RATIO 0.45->0.50 with LayerNorm (longer warmd
 520d47e	1.391636	0.0	discard	ve_gate_channels 64->128 (64 sweet spot)
 a213e9a	1.410592	0.0	discard	remove x0 skip with LayerNorm (x0 still needed)
 7e66467	1.389723	0.0	discard	MATRIX_LR 0.09->0.08 with LayerNorm (0.09 better)
+08cd3f4	1.412394	0.0	discard	RoPE base 10000->50000 with LayerNorm (10000 better)
