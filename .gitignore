@@ -18,3 +18,7 @@ AGENTS.md
 
 # Experimental code/artifacts
 dev/
+
+# Checkpoints and logs
+checkpoint*
+run.log
