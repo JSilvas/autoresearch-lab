@@ -78,4 +78,5 @@
 | [2026031767_beta170](2026031767_beta170.md) | 9b34506 | 1.371243 | discard | ADAM beta1 0.75→0.70 (marginal, 0.75 optimal) |
 | [2026031768_matrixlr090](2026031768_matrixlr090.md) | 850c314 | 1.370933 | keep | MATRIX_LR 0.095→0.090 ← NEW BEST |
 | [2026031769_matrixlr085](2026031769_matrixlr085.md) | eb4d05a | 1.370791 | keep | MATRIX_LR 0.090→0.085 ← NEW BEST |
-| [2026031770_matrixlr080](2026031770_matrixlr080.md) | TBD | TBD | TBD | MATRIX_LR 0.085→0.080 (continue sweep) |
+| [2026031770_matrixlr080](2026031770_matrixlr080.md) | 428f3a3 | 1.369486 | keep | MATRIX_LR 0.085→0.080 ← NEW BEST (Δ-0.0013!) |
+| [2026031771_matrixlr075](2026031771_matrixlr075.md) | TBD | TBD | TBD | MATRIX_LR 0.080→0.075 (sweep accelerating) |
