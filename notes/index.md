@@ -69,4 +69,5 @@
 | [2026031759_warmdown45](2026031759_warmdown45.md) | 2cfd433 | 1.372749 | discard | WARMDOWN_RATIO 0.50→0.45 (shorter warmdown, 0.50 optimal at S=64) |
 | [2026031760_warmdown55](2026031760_warmdown55.md) | d20b7f8 | 1.371455 | keep | WARMDOWN_RATIO 0.50→0.55 ← NEW BEST |
 | [2026031761_warmdown60](2026031761_warmdown60.md) | 3c283aa | 1.371320 | keep | WARMDOWN_RATIO 0.55→0.60 ← NEW BEST |
-| [2026031762_warmdown65](2026031762_warmdown65.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.60→0.65 (continue sweep) |
+| [2026031762_warmdown65](2026031762_warmdown65.md) | ee42c4f | 1.371208 | keep | WARMDOWN_RATIO 0.60→0.65 ← NEW BEST |
+| [2026031763_warmdown70](2026031763_warmdown70.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.65→0.70 (continue sweep) |
