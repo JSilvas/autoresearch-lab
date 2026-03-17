@@ -7,3 +7,4 @@ cb0a43f	1.407007	0.0	keep	baseline
 ff0f6a2	1.491694	0.0	discard	HEAD_DIM=64 4 heads (128 2-head better)
 32c2f3d	1.388859	0.0	keep	WEIGHT_DECAY 0.2->0.15
 0a7bbde	1.392744	0.0	discard	WEIGHT_DECAY 0.15->0.10 (0.15 sweet spot)
+3ad49b8	1.389914	0.0	discard	FINAL_LR_FRAC 0.08->0.04 (0.08 better)
