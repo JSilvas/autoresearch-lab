@@ -76,3 +76,4 @@ f67b8f4	1.369316	0.0	keep	WARMDOWN_RATIO 0.65->0.60 retest (new best, optimum sh
 75e8376	1.369780	0.0	discard	WARMDOWN_RATIO 0.60->0.55 (0.60 confirmed optimal at MATRIX_LR=0.080)
 14f8634	1.369366	0.0	discard	MATRIX_LR 0.080->0.075 at WARMDOWN=0.60 (0.080 robust)
 163e271	1.369852	0.0	discard	UNEMBEDDING_LR 0.004->0.006 (0.004 robust at new config)
+0996160	1.369458	0.0	discard	MUON_BETA2 0.95->0.90 (0.95 optimal)
