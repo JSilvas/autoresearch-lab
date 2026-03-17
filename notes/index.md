@@ -25,4 +25,4 @@
 | [2026031719_depth3_wd020](2026031719_depth3_wd020.md) | b2536e1 | 1.383020 | discard | DEPTH=3 WD 0.15→0.20 |
 | [2026031720_ssl_window](2026031720_ssl_window.md) | fbc3b42 | 1.378737 | keep | WINDOW_PATTERN SSL ← NEW BEST |
 | [2026031721_halfbatch](2026031721_halfbatch.md) | fc79a75 | 1.387704 | discard | half batch BS=8 |
-| [2026031722_matrixlr95](2026031722_matrixlr95.md) | TBD | TBD | TBD | MATRIX_LR 0.09→0.095 |
+| [2026031722_matrixlr95](2026031722_matrixlr95.md) | 3742ab2 | 1.377378 | keep | MATRIX_LR 0.09→0.095 ← NEW BEST |
