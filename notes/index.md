@@ -31,3 +31,4 @@
 | [2026031725_emblr07](2026031725_emblr07.md) | 4e9d975 | 1.376603 | keep | EMBEDDING_LR 0.6→0.7 ← NEW BEST |
 | [2026031726_emblr08](2026031726_emblr08.md) | 80d7ce2 | 1.383802 | discard | EMBEDDING_LR 0.7→0.8 |
 | **[insight_03_exp18to25](insight_03_exp18to25.md)** | — | — | insight | Exp18-25 summary |
+| [2026031727_beta175](2026031727_beta175.md) | 384900d | 1.376361 | keep | ADAM beta1 0.7→0.75 ← NEW BEST |
