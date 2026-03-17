@@ -81,4 +81,5 @@
 | [2026031770_matrixlr080](2026031770_matrixlr080.md) | 428f3a3 | 1.369486 | keep | MATRIX_LR 0.085→0.080 ← NEW BEST (Δ-0.0013!) |
 | [2026031771_matrixlr075](2026031771_matrixlr075.md) | c5e9961 | 1.369538 | discard | MATRIX_LR 0.080→0.075 (0.080 confirmed optimal) |
 | **[insight_08_exp64to71](insight_08_exp64to71.md)** | — | — | insight | Exp64-71: MATRIX_LR=0.080 new best (Δ-0.00172 at WARMDOWN=0.65) |
-| [2026031772_emblr06](2026031772_emblr06.md) | TBD | TBD | TBD | EMBEDDING_LR 0.7→0.6 (retune at new config) |
+| [2026031772_emblr06](2026031772_emblr06.md) | f0e6efe | 1.370290 | discard | EMBEDDING_LR 0.7→0.6 (0.7 robust, no MATRIX_LR interaction) |
+| [2026031773_scalarlr06](2026031773_scalarlr06.md) | TBD | TBD | TBD | SCALAR_LR 0.7→0.6 (retune after MATRIX_LR shift) |

@@ -69,3 +69,4 @@ bd20a8f	1.371321	0.0	discard	FINAL_LR_FRAC 0.08->0.06 (0.08 optimal at WARMDOWN=
 eb4d05a	1.370791	0.0	keep	MATRIX_LR 0.090->0.085 (new best)
 428f3a3	1.369486	0.0	keep	MATRIX_LR 0.085->0.080 (massive new best delta-0.0013)
 c5e9961	1.369538	0.0	discard	MATRIX_LR 0.080->0.075 (0.080 confirmed optimal)
+f0e6efe	1.370290	0.0	discard	EMBEDDING_LR 0.7->0.6 (0.7 robust at new config)
