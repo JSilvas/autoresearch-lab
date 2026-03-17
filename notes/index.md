@@ -56,4 +56,5 @@
 | [2026031747_emblr075](2026031747_emblr075.md) | 93cfb09 | 1.375955 | discard | EMBEDDING_LR 0.7→0.75 (marginal miss, 0.7 optimal) |
 | [2026031748_emblr065](2026031748_emblr065.md) | c814390 | 1.377477 | discard | EMBEDDING_LR 0.75→0.65 (0.7 confirmed optimal) |
 | [2026031749_window_quarter](2026031749_window_quarter.md) | ed9372d | 1.373701 | keep | SHORT_WINDOW_FRAC 2→4 (S=512, +16% steps) ← NEW BEST |
-| [2026031750_window_eighth](2026031750_window_eighth.md) | TBD | TBD | TBD | SHORT_WINDOW_FRAC 4→8 (S=256, even more steps) |
+| [2026031750_window_eighth](2026031750_window_eighth.md) | 0257683 | 1.372684 | keep | SHORT_WINDOW_FRAC 4→8 (S=256) ← NEW BEST |
+| [2026031751_window_16th](2026031751_window_16th.md) | TBD | TBD | TBD | SHORT_WINDOW_FRAC 8→16 (S=128) |

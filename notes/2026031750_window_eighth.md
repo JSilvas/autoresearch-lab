@@ -5,6 +5,6 @@
 **Code Change**: SHORT_WINDOW_FRAC = 4 → 8
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.372684
+**Git Hash**: 0257683
+**Verdict**: KEEP. New best (1.373701→1.372684, Δ=-0.001017). Trend continues: smaller S window = more steps = better. Try S=128 (FRAC=16) next.
