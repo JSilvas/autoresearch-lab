@@ -48,4 +48,5 @@
 | [2026031740_muonmom75](2026031740_muonmom75.md) | 5b474ca | 1.381605 | discard | Muon momentum 0.80→0.75 (symmetric, 0.80 optimal) |
 | [2026031741_lss_window](2026031741_lss_window.md) | d894078 | 1.380756 | discard | WINDOW_PATTERN SSL→LSS (last-layer global attn is key) |
 | [2026031742_headdim96](2026031742_headdim96.md) | 1d8ad51 | 1.404089 | discard | HEAD_DIM 128→96 (2 heads much worse, 1 head preferred) |
-| [2026031743_no_ve](2026031743_no_ve.md) | TBD | TBD | TBD | No Value Embeddings (remove VE from all layers) |
+| [2026031743_no_ve](2026031743_no_ve.md) | 3866f73 | 1.431874 | discard | No VE — catastrophic (+0.056), VE is architecturally critical |
+| [2026031744_relu_plain](2026031744_relu_plain.md) | TBD | TBD | TBD | Activation ReLU²→ReLU (less sparse, more gradient flow) |

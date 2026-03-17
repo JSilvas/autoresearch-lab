@@ -40,3 +40,4 @@ a5e79ce	1.382130	0.0	discard	MLP 3x->2x at DEPTH=3 (capacity loss > step gain)
 5b474ca	1.381605	0.0	discard	Muon momentum 0.80->0.75 (symmetric, 0.80 optimal)
 d894078	1.380756	0.0	discard	WINDOW_PATTERN SSL->LSS (last-layer global context key)
 1d8ad51	1.404089	0.0	discard	HEAD_DIM 128->96 (2 heads much worse, 1 head optimal)
+3866f73	1.431874	0.0	discard	No VE catastrophic (+0.056) VE is architecturally critical
