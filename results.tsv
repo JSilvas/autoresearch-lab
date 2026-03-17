@@ -112,3 +112,4 @@ e3e80aa	1.388107	0.0	keep	WARMDOWN_RATIO 0.45->0.50 with LayerNorm (longer warmd
 1801771	1.389174	0.0	discard	ADAM_BETAS beta1 0.7->0.65 with LayerNorm (0.7 better)
 728f4ea	1.392938	0.0	discard	Muon momentum 0.80->0.75 with LayerNorm (0.80 still best)
 2faa8a0	1.392255	0.0	discard	WEIGHT_DECAY 0.2->0.25 with LayerNorm (0.2 better)
+3e56da1	1.387650	0.0	keep	ve_gate_channels 32->64 with LayerNorm (richer gate)
