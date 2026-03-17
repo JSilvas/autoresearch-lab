@@ -16,3 +16,4 @@ d17078d	1.387965	0.0	keep	MLP 3x width (more steps vs 4x)
 57f3251	1.380054	0.0	keep	DEPTH=3 MLP 3x (1.380054 new best beats mar15)
 9b23684	1.444568	0.0	discard	DEPTH=2 too shallow
 43a3b31	1.383452	0.0	discard	DEPTH=3 MLP 4x (3x still better)
+b2536e1	1.383020	0.0	discard	DEPTH=3 WD=0.20 (0.15 still best)
