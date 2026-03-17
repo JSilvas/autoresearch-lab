@@ -5,6 +5,6 @@
 **Code Change**: WARMDOWN_RATIO = 0.65 → 0.60
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.369316
+**Git Hash**: f67b8f4
+**Verdict**: KEEP. New best (Δ=-0.000170)! WARMDOWN optimum shifted at MATRIX_LR=0.080 — 0.60 is now better than 0.65. Continue sweep down to 0.55.

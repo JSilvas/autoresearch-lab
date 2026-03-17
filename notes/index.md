@@ -84,4 +84,5 @@
 | [2026031772_emblr06](2026031772_emblr06.md) | f0e6efe | 1.370290 | discard | EMBEDDING_LR 0.7→0.6 (0.7 robust, no MATRIX_LR interaction) |
 | [2026031773_scalarlr06](2026031773_scalarlr06.md) | a4c137c | 1.369900 | discard | SCALAR_LR 0.7→0.6 (0.7 robust, only MATRIX_LR needed recalibration) |
 | [2026031774_warmdown70_retest](2026031774_warmdown70_retest.md) | 03254d8 | 1.369773 | discard | WARMDOWN_RATIO 0.65→0.70 retest (0.65 still optimal at new MATRIX_LR) |
-| [2026031775_warmdown60_retest](2026031775_warmdown60_retest.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.65→0.60 retest at MATRIX_LR=0.080 |
+| [2026031775_warmdown60_retest](2026031775_warmdown60_retest.md) | f67b8f4 | 1.369316 | keep | WARMDOWN_RATIO 0.65→0.60 retest ← NEW BEST (optimum shifted!) |
+| [2026031776_warmdown55_retest](2026031776_warmdown55_retest.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.60→0.55 (continue sweep at MATRIX_LR=0.080) |
