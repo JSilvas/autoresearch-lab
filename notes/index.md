@@ -63,4 +63,5 @@
 | [2026031754_matrixlr_retune](2026031754_matrixlr_retune.md) | 97c5209 | 1.374063 | discard | MATRIX_LR 0.095→0.10 (0.095 robust at S=64) |
 | **[insight_06_exp45to54](insight_06_exp45to54.md)** | — | — | insight | Exp45-54: S=64 window is the biggest lever (Δ-0.004 total) |
 | [2026031755_scalarlr_retune](2026031755_scalarlr_retune.md) | 43c172c | 1.373208 | discard | SCALAR_LR 0.7→0.8 (0.7 robust, no S=64 interaction) |
-| [2026031756_depth4_ar48](2026031756_depth4_ar48.md) | TBD | TBD | TBD | DEPTH=4 AR=48 (dim=192, SSSL, 18% step cost) |
+| [2026031756_depth4_ar48](2026031756_depth4_ar48.md) | 465ed41 | 1.384081 | discard | DEPTH=4 AR=48 (still too expensive vs DEPTH=3) |
+| [2026031757_mlp4x_s64](2026031757_mlp4x_s64.md) | TBD | TBD | TBD | MLP 3x→4x at S=64 (re-test in MLP-dominant regime) |

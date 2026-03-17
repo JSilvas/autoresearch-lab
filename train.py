@@ -139,8 +139,8 @@ class CausalSelfAttention(nn.Module):
 class MLP(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.c_fc = nn.Linear(config.n_embd, 3 * config.n_embd, bias=False)
-        self.c_proj = nn.Linear(3 * config.n_embd, config.n_embd, bias=False)
+        self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=False)
+        self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=False)
 
     def forward(self, x):
         x = self.c_fc(x)
@@ -495,9 +495,9 @@ class MuonAdamW(torch.optim.Optimizer):
 # ---------------------------------------------------------------------------
 
 # Model architecture
-ASPECT_RATIO = 48       # model_dim = depth * ASPECT_RATIO
+ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=short context
+WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 32  # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
 
 # Optimization
@@ -513,7 +513,7 @@ WARMDOWN_RATIO = 0.50   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
 
 # Model size
-DEPTH = 4               # number of transformer layers
+DEPTH = 3               # number of transformer layers
 DEVICE_BATCH_SIZE = 16  # per-device batch size (reduce if OOM)
 
 # ---------------------------------------------------------------------------
