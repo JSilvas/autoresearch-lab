@@ -58,6 +58,7 @@ class GPTConfig:
     n_kv_head: int = 6
     n_embd: int = 768
     window_pattern: str = "SSSL"
+    short_window_frac: int = 2  # S window = seq_len // short_window_frac
 
 
 def norm(x):
@@ -235,7 +236,7 @@ class GPT(nn.Module):
         pattern = config.window_pattern.upper()
         assert all(c in "SL" for c in pattern)
         long_window = config.sequence_len
-        short_window = long_window // 2
+        short_window = long_window // config.short_window_frac
         char_to_window = {"L": (long_window, 0), "S": (short_window, 0)}
         window_sizes = []
         for layer_idx in range(config.n_layer):
@@ -496,11 +497,12 @@ class MuonAdamW(torch.optim.Optimizer):
 # Model architecture
 ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=half context
+WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
+SHORT_WINDOW_FRAC = 4   # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
-EMBEDDING_LR = 0.65     # learning rate for token embeddings (Adam)
+EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.095       # learning rate for matrix parameters (Muon)
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
@@ -551,6 +553,7 @@ def build_model_config(depth):
         sequence_len=MAX_SEQ_LEN, vocab_size=vocab_size,
         n_layer=depth, n_head=num_heads, n_kv_head=num_heads, n_embd=model_dim,
         window_pattern=WINDOW_PATTERN,
+        short_window_frac=SHORT_WINDOW_FRAC,
     )
 
 config = build_model_config(DEPTH)
