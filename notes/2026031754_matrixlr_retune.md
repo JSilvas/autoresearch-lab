@@ -5,6 +5,6 @@
 **Code Change**: MATRIX_LR = 0.095 → 0.10
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.374063
+**Git Hash**: 97c5209
+**Verdict**: DISCARD. MATRIX_LR=0.095 still optimal even in MLP-dominant S=64 regime. No interaction effect with window size.

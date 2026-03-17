@@ -60,4 +60,6 @@
 | [2026031751_window_16th](2026031751_window_16th.md) | 2304383 | 1.372200 | keep | SHORT_WINDOW_FRAC 8→16 (S=128) ← NEW BEST |
 | [2026031752_window_32nd](2026031752_window_32nd.md) | 5bc773a | 1.371759 | keep | SHORT_WINDOW_FRAC 16→32 (S=64) ← NEW BEST |
 | [2026031753_window_64th](2026031753_window_64th.md) | 6c71eb6 | 1.374682 | discard | SHORT_WINDOW_FRAC 32→64 (S=32 too small, 64 optimal) |
-| [2026031754_matrixlr_retune](2026031754_matrixlr_retune.md) | TBD | TBD | TBD | MATRIX_LR 0.095→0.10 (re-tune with S=64 locked) |
+| [2026031754_matrixlr_retune](2026031754_matrixlr_retune.md) | 97c5209 | 1.374063 | discard | MATRIX_LR 0.095→0.10 (0.095 robust at S=64) |
+| **[insight_06_exp45to54](insight_06_exp45to54.md)** | — | — | insight | Exp45-54: S=64 window is the biggest lever (Δ-0.004 total) |
+| [2026031755_scalarlr_retune](2026031755_scalarlr_retune.md) | TBD | TBD | TBD | SCALAR_LR 0.7→0.8 (re-tune with S=64) |
