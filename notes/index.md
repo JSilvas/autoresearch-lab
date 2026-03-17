@@ -88,4 +88,5 @@
 | [2026031776_warmdown55_retest](2026031776_warmdown55_retest.md) | 75e8376 | 1.369780 | discard | WARMDOWN_RATIO 0.60→0.55 (0.60 confirmed optimal at MATRIX_LR=0.080) |
 | [2026031777_matrixlr075_wd60](2026031777_matrixlr075_wd60.md) | 14f8634 | 1.369366 | discard | MATRIX_LR 0.080→0.075 at WARMDOWN=0.60 (0.080 robust) |
 | **[insight_09_exp72to77](insight_09_exp72to77.md)** | — | — | insight | Exp72-77: WARMDOWN×MATRIX_LR co-opt, joint best (0.080, 0.60)=1.369316 |
-| [2026031778_unembedlr006](2026031778_unembedlr006.md) | TBD | TBD | TBD | UNEMBEDDING_LR 0.004→0.006 (retune at new joint config) |
+| [2026031778_unembedlr006](2026031778_unembedlr006.md) | 163e271 | 1.369852 | discard | UNEMBEDDING_LR 0.004→0.006 (0.004 robust at new config) |
+| [2026031779_muonbeta2_90](2026031779_muonbeta2_90.md) | TBD | TBD | TBD | MUON_BETA2 0.95→0.90 (new param, Muon 2nd-order momentum) |
