@@ -5,6 +5,6 @@
 **Code Change**: SCALAR_LR = 0.7 → 0.8
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.373208
+**Git Hash**: 43c172c
+**Verdict**: DISCARD. SCALAR_LR=0.7 robust at S=64 — no interaction effect with window size.

@@ -495,9 +495,9 @@ class MuonAdamW(torch.optim.Optimizer):
 # ---------------------------------------------------------------------------
 
 # Model architecture
-ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
+ASPECT_RATIO = 48       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
+WINDOW_PATTERN = "SSSL" # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 32  # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
 
 # Optimization
@@ -505,7 +505,7 @@ TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
 EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.095       # learning rate for matrix parameters (Muon)
-SCALAR_LR = 0.8         # learning rate for per-layer scalars (Adam)
+SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
 ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
 WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
@@ -513,7 +513,7 @@ WARMDOWN_RATIO = 0.50   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
 
 # Model size
-DEPTH = 3               # number of transformer layers
+DEPTH = 4               # number of transformer layers
 DEVICE_BATCH_SIZE = 16  # per-device batch size (reduce if OOM)
 
 # ---------------------------------------------------------------------------

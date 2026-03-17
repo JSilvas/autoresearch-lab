@@ -62,4 +62,5 @@
 | [2026031753_window_64th](2026031753_window_64th.md) | 6c71eb6 | 1.374682 | discard | SHORT_WINDOW_FRAC 32→64 (S=32 too small, 64 optimal) |
 | [2026031754_matrixlr_retune](2026031754_matrixlr_retune.md) | 97c5209 | 1.374063 | discard | MATRIX_LR 0.095→0.10 (0.095 robust at S=64) |
 | **[insight_06_exp45to54](insight_06_exp45to54.md)** | — | — | insight | Exp45-54: S=64 window is the biggest lever (Δ-0.004 total) |
-| [2026031755_scalarlr_retune](2026031755_scalarlr_retune.md) | TBD | TBD | TBD | SCALAR_LR 0.7→0.8 (re-tune with S=64) |
+| [2026031755_scalarlr_retune](2026031755_scalarlr_retune.md) | 43c172c | 1.373208 | discard | SCALAR_LR 0.7→0.8 (0.7 robust, no S=64 interaction) |
+| [2026031756_depth4_ar48](2026031756_depth4_ar48.md) | TBD | TBD | TBD | DEPTH=4 AR=48 (dim=192, SSSL, 18% step cost) |
