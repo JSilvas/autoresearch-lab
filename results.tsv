@@ -42,3 +42,4 @@ d894078	1.380756	0.0	discard	WINDOW_PATTERN SSL->LSS (last-layer global context 
 1d8ad51	1.404089	0.0	discard	HEAD_DIM 128->96 (2 heads much worse, 1 head optimal)
 3866f73	1.431874	0.0	discard	No VE catastrophic (+0.056) VE is architecturally critical
 386ae53	1.396303	0.0	discard	ReLU2->ReLU (much worse ReLU2 is critical)
+18e1901	1.382688	0.0	discard	VE last-layer only (layer 0 VE matters, 2/3 > 1/3)

@@ -66,7 +66,7 @@ def norm(x):
 
 def has_ve(layer_idx, n_layer):
     """Returns True if layer should have Value Embedding (alternating, last always included)."""
-    return layer_idx == n_layer - 1
+    return True  # all layers have VE
 
 
 def apply_rotary_emb(x, cos, sin):

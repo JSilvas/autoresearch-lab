@@ -51,4 +51,5 @@
 | [2026031743_no_ve](2026031743_no_ve.md) | 3866f73 | 1.431874 | discard | No VE — catastrophic (+0.056), VE is architecturally critical |
 | [2026031744_relu_plain](2026031744_relu_plain.md) | 386ae53 | 1.396303 | discard | ReLU²→ReLU (much worse, ReLU² is critical) |
 | **[insight_05_exp36to44](insight_05_exp36to44.md)** | — | — | insight | Exp36-44: all hyperaxes exhausted, architecture confirmed stable |
-| [2026031745_ve_lastonly](2026031745_ve_lastonly.md) | TBD | TBD | TBD | VE last-layer only (layer 2 only, fewer params) |
+| [2026031745_ve_lastonly](2026031745_ve_lastonly.md) | 18e1901 | 1.382688 | discard | VE last-layer only (layer 0 VE matters, 2/3 > 1/3) |
+| [2026031746_ve_all](2026031746_ve_all.md) | TBD | TBD | TBD | VE all layers (3/3, follows monotone trend) |
