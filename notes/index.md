@@ -79,4 +79,6 @@
 | [2026031768_matrixlr090](2026031768_matrixlr090.md) | 850c314 | 1.370933 | keep | MATRIX_LR 0.095→0.090 ← NEW BEST |
 | [2026031769_matrixlr085](2026031769_matrixlr085.md) | eb4d05a | 1.370791 | keep | MATRIX_LR 0.090→0.085 ← NEW BEST |
 | [2026031770_matrixlr080](2026031770_matrixlr080.md) | 428f3a3 | 1.369486 | keep | MATRIX_LR 0.085→0.080 ← NEW BEST (Δ-0.0013!) |
-| [2026031771_matrixlr075](2026031771_matrixlr075.md) | TBD | TBD | TBD | MATRIX_LR 0.080→0.075 (sweep accelerating) |
+| [2026031771_matrixlr075](2026031771_matrixlr075.md) | c5e9961 | 1.369538 | discard | MATRIX_LR 0.080→0.075 (0.080 confirmed optimal) |
+| **[insight_08_exp64to71](insight_08_exp64to71.md)** | — | — | insight | Exp64-71: MATRIX_LR=0.080 new best (Δ-0.00172 at WARMDOWN=0.65) |
+| [2026031772_emblr06](2026031772_emblr06.md) | TBD | TBD | TBD | EMBEDDING_LR 0.7→0.6 (retune at new config) |
