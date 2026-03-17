@@ -5,6 +5,6 @@
 **Code Change**: SHORT_WINDOW_FRAC = 2 → 4 (new configurable param; was hardcoded //2)
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.373701
+**Git Hash**: ed9372d
+**Verdict**: KEEP. New best (1.375674→1.373701, Δ=-0.001973). Quarter window gives more optimizer steps. Try S=256 (//8) next.
