@@ -85,4 +85,5 @@
 | [2026031773_scalarlr06](2026031773_scalarlr06.md) | a4c137c | 1.369900 | discard | SCALAR_LR 0.7→0.6 (0.7 robust, only MATRIX_LR needed recalibration) |
 | [2026031774_warmdown70_retest](2026031774_warmdown70_retest.md) | 03254d8 | 1.369773 | discard | WARMDOWN_RATIO 0.65→0.70 retest (0.65 still optimal at new MATRIX_LR) |
 | [2026031775_warmdown60_retest](2026031775_warmdown60_retest.md) | f67b8f4 | 1.369316 | keep | WARMDOWN_RATIO 0.65→0.60 retest ← NEW BEST (optimum shifted!) |
-| [2026031776_warmdown55_retest](2026031776_warmdown55_retest.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.60→0.55 (continue sweep at MATRIX_LR=0.080) |
+| [2026031776_warmdown55_retest](2026031776_warmdown55_retest.md) | 75e8376 | 1.369780 | discard | WARMDOWN_RATIO 0.60→0.55 (0.60 confirmed optimal at MATRIX_LR=0.080) |
+| [2026031777_matrixlr075_wd60](2026031777_matrixlr075_wd60.md) | TBD | TBD | TBD | MATRIX_LR 0.080→0.075 retest at WARMDOWN=0.60 |
