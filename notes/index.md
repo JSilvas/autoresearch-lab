@@ -39,4 +39,6 @@
 | [2026031732_scalarlr07](2026031732_scalarlr07.md) | ece6e80 | 1.375674 | keep | SCALAR_LR 0.5→0.7 ← NEW BEST |
 | [2026031733_scalarlr09](2026031733_scalarlr09.md) | 3340265 | 1.376563 | discard | SCALAR_LR 0.7→0.9 (overshoots, 0.7 optimal) |
 | [2026031734_unembedlr008](2026031734_unembedlr008.md) | 8aec15b | 1.379705 | discard | UNEMBEDDING_LR 0.004→0.008 (too high) |
-| [2026031735_unembedlr002](2026031735_unembedlr002.md) | TBD | TBD | TBD | UNEMBEDDING_LR 0.004→0.002 |
+| [2026031735_unembedlr002](2026031735_unembedlr002.md) | 31a876b | 1.389440 | discard | UNEMBEDDING_LR 0.004→0.002 (too low, 0.004 optimal) |
+| **[insight_04_exp30to35](insight_04_exp30to35.md)** | — | — | insight | Exp30-35: SCALAR_LR=0.7 new best, DEPTH=2 dead, UNEMBED_LR=0.004 optimal |
+| [2026031736_beta2_99](2026031736_beta2_99.md) | TBD | TBD | TBD | ADAM beta2 0.95→0.99 |
