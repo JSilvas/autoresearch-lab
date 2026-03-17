@@ -130,3 +130,4 @@ b8fbc40	1.389551	0.0	discard	Muon momentum 0.80->0.85 with LayerNorm (0.80 still
 ed4f791	1.388369	0.0	discard	WEIGHT_DECAY 0.2->0.15 with LayerNorm (0.2 better)
 4506fae	1.736606	0.0	discard	NoPE remove RoPE (catastrophic without position encoding)
 fdb6958	1.394104	0.0	discard	full-width VE gate 64->256 channels (64 better bottleneck)
+e5bf24c	1.407302	0.0	discard	label smoothing 0.05 (hurts LM training)
