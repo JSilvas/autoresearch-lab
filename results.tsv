@@ -30,3 +30,4 @@ bfb0c03	1.376968	0.0	discard	WINDOW_PATTERN SL (1 sliding worse than SSL 2 slidi
 632fb05	1.437080	0.0	discard	DEPTH=2 retest optimized hyperparams — still too shallow (+0.061)
 a0bf157	1.381099	0.0	discard	SCALAR_LR 0.5->0.3 (too low, 0.5 optimal)
 ece6e80	1.375674	0.0	keep	SCALAR_LR 0.5->0.7 (new best 1.375674)
+3340265	1.376563	0.0	discard	SCALAR_LR 0.7->0.9 (overshoots, 0.7 optimal)
