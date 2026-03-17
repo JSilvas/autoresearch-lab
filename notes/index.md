@@ -19,3 +19,6 @@
 | [2026031714_mlp3x](2026031714_mlp3x.md) | d17078d | 1.387965 | keep | MLP 4x→3x width |
 | [2026031715_mlp2x](2026031715_mlp2x.md) | 1c7cf81 | 1.396342 | discard | MLP 3x→2x width |
 | [2026031716_depth3](2026031716_depth3.md) | 57f3251 | 1.380054 | keep | DEPTH=3 MLP 3x ← NEW BEST |
+| [2026031717_depth2](2026031717_depth2.md) | 9b23684 | 1.444568 | discard | DEPTH=2 (too shallow) |
+| **[insight_02_exp6to15](insight_02_exp6to15.md)** | — | — | insight | Exp6-15: step-starvation discovery |
+| [2026031718_depth3_mlp4x](2026031718_depth3_mlp4x.md) | 43a3b31 | 1.383452 | discard | DEPTH=3 MLP 4x |
