@@ -36,4 +36,5 @@
 | [2026031729_sl_window](2026031729_sl_window.md) | bfb0c03 | 1.376968 | discard | WINDOW_PATTERN SL (1 sliding < 2 sliding) |
 | [2026031730_depth2_retest](2026031730_depth2_retest.md) | 632fb05 | 1.437080 | discard | DEPTH=2 retest — still too shallow even with optimized params |
 | [2026031731_scalarlr03](2026031731_scalarlr03.md) | a0bf157 | 1.381099 | discard | SCALAR_LR 0.5→0.3 (too low, hurts) |
-| [2026031732_scalarlr07](2026031732_scalarlr07.md) | TBD | TBD | TBD | SCALAR_LR 0.5→0.7 |
+| [2026031732_scalarlr07](2026031732_scalarlr07.md) | ece6e80 | 1.375674 | keep | SCALAR_LR 0.5→0.7 ← NEW BEST |
+| [2026031733_scalarlr09](2026031733_scalarlr09.md) | TBD | TBD | TBD | SCALAR_LR 0.7→0.9 |
