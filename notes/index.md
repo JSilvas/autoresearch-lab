@@ -58,4 +58,5 @@
 | [2026031749_window_quarter](2026031749_window_quarter.md) | ed9372d | 1.373701 | keep | SHORT_WINDOW_FRAC 2→4 (S=512, +16% steps) ← NEW BEST |
 | [2026031750_window_eighth](2026031750_window_eighth.md) | 0257683 | 1.372684 | keep | SHORT_WINDOW_FRAC 4→8 (S=256) ← NEW BEST |
 | [2026031751_window_16th](2026031751_window_16th.md) | 2304383 | 1.372200 | keep | SHORT_WINDOW_FRAC 8→16 (S=128) ← NEW BEST |
-| [2026031752_window_32nd](2026031752_window_32nd.md) | TBD | TBD | TBD | SHORT_WINDOW_FRAC 16→32 (S=64, ~Δ-0.0002 expected) |
+| [2026031752_window_32nd](2026031752_window_32nd.md) | 5bc773a | 1.371759 | keep | SHORT_WINDOW_FRAC 16→32 (S=64) ← NEW BEST |
+| [2026031753_window_64th](2026031753_window_64th.md) | TBD | TBD | TBD | SHORT_WINDOW_FRAC 32→64 (S=32, near-causal) |
