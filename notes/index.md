@@ -47,4 +47,5 @@
 | [2026031739_aspect56](2026031739_aspect56.md) | 2358e17 | 1.380076 | discard | ASPECT_RATIO 64→56 (dim 192→168, capacity loss) |
 | [2026031740_muonmom75](2026031740_muonmom75.md) | 5b474ca | 1.381605 | discard | Muon momentum 0.80→0.75 (symmetric, 0.80 optimal) |
 | [2026031741_lss_window](2026031741_lss_window.md) | d894078 | 1.380756 | discard | WINDOW_PATTERN SSL→LSS (last-layer global attn is key) |
-| [2026031742_headdim96](2026031742_headdim96.md) | TBD | TBD | TBD | HEAD_DIM 128→96 (1 head→2 heads, same FLOPs) |
+| [2026031742_headdim96](2026031742_headdim96.md) | 1d8ad51 | 1.404089 | discard | HEAD_DIM 128→96 (2 heads much worse, 1 head preferred) |
+| [2026031743_no_ve](2026031743_no_ve.md) | TBD | TBD | TBD | No Value Embeddings (remove VE from all layers) |

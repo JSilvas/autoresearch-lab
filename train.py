@@ -66,7 +66,7 @@ def norm(x):
 
 def has_ve(layer_idx, n_layer):
     """Returns True if layer should have Value Embedding (alternating, last always included)."""
-    return layer_idx % 2 == (n_layer - 1) % 2
+    return False  # no VE — test removing value embeddings entirely
 
 
 def apply_rotary_emb(x, cos, sin):
@@ -495,7 +495,7 @@ class MuonAdamW(torch.optim.Optimizer):
 
 # Model architecture
 ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
-HEAD_DIM = 96           # target head dimension for attention
+HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=half context
 
 # Optimization
