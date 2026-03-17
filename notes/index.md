@@ -26,3 +26,6 @@
 | [2026031720_ssl_window](2026031720_ssl_window.md) | fbc3b42 | 1.378737 | keep | WINDOW_PATTERN SSL ← NEW BEST |
 | [2026031721_halfbatch](2026031721_halfbatch.md) | fc79a75 | 1.387704 | discard | half batch BS=8 |
 | [2026031722_matrixlr95](2026031722_matrixlr95.md) | 3742ab2 | 1.377378 | keep | MATRIX_LR 0.09→0.095 ← NEW BEST |
+| [2026031723_matrixlr10](2026031723_matrixlr10.md) | 7718042 | 1.379157 | discard | MATRIX_LR 0.095→0.10 |
+| [2026031724_momentum85](2026031724_momentum85.md) | a3587c5 | 1.378283 | discard | Muon momentum 0.80→0.85 |
+| [2026031725_emblr07](2026031725_emblr07.md) | TBD | TBD | TBD | EMBEDDING_LR 0.6→0.7 |
