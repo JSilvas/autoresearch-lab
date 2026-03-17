@@ -3,3 +3,4 @@ cb0a43f	1.407007	0.0	keep	baseline
 6edf0ba	1.399548	0.0	discard	SwiGLU iso-param MLP (ReLU2 better at this scale)
 3f5636e	1.443825	0.0	discard	WARMUP_RATIO 0.0->0.03 (hurts at 333 steps)
 6e2f68b	1.402906	0.0	discard	MQA n_kv_head=1 (too few heads for this to help)
+0327fa1	1.509948	0.0	discard	DEPTH=5 ASPECT_RATIO=52 (too few steps)
