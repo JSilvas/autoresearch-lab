@@ -70,4 +70,6 @@
 | [2026031760_warmdown55](2026031760_warmdown55.md) | d20b7f8 | 1.371455 | keep | WARMDOWN_RATIO 0.50→0.55 ← NEW BEST |
 | [2026031761_warmdown60](2026031761_warmdown60.md) | 3c283aa | 1.371320 | keep | WARMDOWN_RATIO 0.55→0.60 ← NEW BEST |
 | [2026031762_warmdown65](2026031762_warmdown65.md) | ee42c4f | 1.371208 | keep | WARMDOWN_RATIO 0.60→0.65 ← NEW BEST |
-| [2026031763_warmdown70](2026031763_warmdown70.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.65→0.70 (continue sweep) |
+| [2026031763_warmdown70](2026031763_warmdown70.md) | 4741a6f | 1.371448 | discard | WARMDOWN_RATIO 0.65→0.70 (inflection, 0.65 optimal) |
+| **[insight_07_exp58to63](insight_07_exp58to63.md)** | — | — | insight | Exp58-63: WARMDOWN_RATIO=0.65 optimal (Δ-0.00055 total) |
+| [2026031764_wd012](2026031764_wd012.md) | TBD | TBD | TBD | WEIGHT_DECAY 0.15→0.12 (retune at S=64, WD=0.65) |
