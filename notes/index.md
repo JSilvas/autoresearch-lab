@@ -59,4 +59,5 @@
 | [2026031750_window_eighth](2026031750_window_eighth.md) | 0257683 | 1.372684 | keep | SHORT_WINDOW_FRAC 4→8 (S=256) ← NEW BEST |
 | [2026031751_window_16th](2026031751_window_16th.md) | 2304383 | 1.372200 | keep | SHORT_WINDOW_FRAC 8→16 (S=128) ← NEW BEST |
 | [2026031752_window_32nd](2026031752_window_32nd.md) | 5bc773a | 1.371759 | keep | SHORT_WINDOW_FRAC 16→32 (S=64) ← NEW BEST |
-| [2026031753_window_64th](2026031753_window_64th.md) | TBD | TBD | TBD | SHORT_WINDOW_FRAC 32→64 (S=32, near-causal) |
+| [2026031753_window_64th](2026031753_window_64th.md) | 6c71eb6 | 1.374682 | discard | SHORT_WINDOW_FRAC 32→64 (S=32 too small, 64 optimal) |
+| [2026031754_matrixlr_retune](2026031754_matrixlr_retune.md) | TBD | TBD | TBD | MATRIX_LR 0.095→0.10 (re-tune with S=64 locked) |
