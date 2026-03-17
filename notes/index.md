@@ -34,4 +34,5 @@
 | [2026031727_beta175](2026031727_beta175.md) | 384900d | 1.376361 | keep | ADAM beta1 0.7→0.75 ← NEW BEST |
 | [2026031728_beta180](2026031728_beta180.md) | 4801ba8 | 1.378564 | discard | ADAM beta1 0.75→0.80 |
 | [2026031729_sl_window](2026031729_sl_window.md) | bfb0c03 | 1.376968 | discard | WINDOW_PATTERN SL (1 sliding < 2 sliding) |
-| [2026031730_depth2_retest](2026031730_depth2_retest.md) | TBD | TBD | TBD | DEPTH=2 retest with optimized hyperparams |
+| [2026031730_depth2_retest](2026031730_depth2_retest.md) | 632fb05 | 1.437080 | discard | DEPTH=2 retest — still too shallow even with optimized params |
+| [2026031731_scalarlr03](2026031731_scalarlr03.md) | TBD | TBD | TBD | SCALAR_LR 0.5→0.3 |
