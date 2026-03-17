@@ -38,4 +38,5 @@
 | [2026031731_scalarlr03](2026031731_scalarlr03.md) | a0bf157 | 1.381099 | discard | SCALAR_LR 0.5→0.3 (too low, hurts) |
 | [2026031732_scalarlr07](2026031732_scalarlr07.md) | ece6e80 | 1.375674 | keep | SCALAR_LR 0.5→0.7 ← NEW BEST |
 | [2026031733_scalarlr09](2026031733_scalarlr09.md) | 3340265 | 1.376563 | discard | SCALAR_LR 0.7→0.9 (overshoots, 0.7 optimal) |
-| [2026031734_unembedlr008](2026031734_unembedlr008.md) | TBD | TBD | TBD | UNEMBEDDING_LR 0.004→0.008 |
+| [2026031734_unembedlr008](2026031734_unembedlr008.md) | 8aec15b | 1.379705 | discard | UNEMBEDDING_LR 0.004→0.008 (too high) |
+| [2026031735_unembedlr002](2026031735_unembedlr002.md) | TBD | TBD | TBD | UNEMBEDDING_LR 0.004→0.002 |
