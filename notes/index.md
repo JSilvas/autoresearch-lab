@@ -32,3 +32,5 @@
 | [2026031726_emblr08](2026031726_emblr08.md) | 80d7ce2 | 1.383802 | discard | EMBEDDING_LR 0.7→0.8 |
 | **[insight_03_exp18to25](insight_03_exp18to25.md)** | — | — | insight | Exp18-25 summary |
 | [2026031727_beta175](2026031727_beta175.md) | 384900d | 1.376361 | keep | ADAM beta1 0.7→0.75 ← NEW BEST |
+| [2026031728_beta180](2026031728_beta180.md) | 4801ba8 | 1.378564 | discard | ADAM beta1 0.75→0.80 |
+| [2026031729_sl_window](2026031729_sl_window.md) | TBD | TBD | TBD | WINDOW_PATTERN SL |
