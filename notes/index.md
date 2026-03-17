@@ -73,4 +73,5 @@
 | [2026031763_warmdown70](2026031763_warmdown70.md) | 4741a6f | 1.371448 | discard | WARMDOWN_RATIO 0.65→0.70 (inflection, 0.65 optimal) |
 | **[insight_07_exp58to63](insight_07_exp58to63.md)** | — | — | insight | Exp58-63: WARMDOWN_RATIO=0.65 optimal (Δ-0.00055 total) |
 | [2026031764_wd012](2026031764_wd012.md) | 8b156a5 | 1.371714 | discard | WEIGHT_DECAY 0.15→0.12 (too low, 0.15 robust) |
-| [2026031765_wd018](2026031765_wd018.md) | TBD | TBD | TBD | WEIGHT_DECAY 0.15→0.18 (other direction bracket) |
+| [2026031765_wd018](2026031765_wd018.md) | 2944d4a | 1.372381 | discard | WEIGHT_DECAY 0.15→0.18 (too high, 0.15 confirmed optimal) |
+| [2026031766_finallr06](2026031766_finallr06.md) | TBD | TBD | TBD | FINAL_LR_FRAC 0.08→0.06 (lower terminal LR at WARMDOWN=0.65) |
