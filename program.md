@@ -18,6 +18,21 @@ To set up a new experiment, work with the user to:
 
 Once you get confirmation, kick off the experimentation.
 
+
+## Capturing Your Process (Atomic Notes)
+
+Every experiment cycle is an evolving Markdown file in /notes/. Treat the TSV as your Database (metrics for machines) and the Zettelkasten as your Journal (reasoning for humans).
+
+1. Draft: Before established the baseline or starting a new cycle, create YYYYMMDDHHMM_slug.md (e.g., 202403151430_baseline.md).
+   - Content: Define Hypothesis, Target Metric, and Code Change.
+2. Execute: Modify train.py strictly based on this file.
+3. Finalize: Post-run, append the Result (val_bpb), the Git Hash, and a 1-sentence Verdict. This note is now a Permanent Record.
+4. Sync: Log the atomic metrics to results.tsv.
+5. Index & Compress: Link the note in index.md. Every 5 cycles, summarize the last 5 notes into an "Insight Note" and move the individual atomics to /notes/archive/.
+
+**Safe Reset Rule**: If an experiment fails, you must revert train.py using git checkout HEAD -- train.py. Never use git reset --hard on the entire directory, as /notes/ must persist across all cycles and resets.
+
+
 ## Experimentation
 
 Each experiment runs on a single GPU. The training script runs for a **fixed time budget of 5 minutes** (wall clock training time, excluding startup/compilation). You launch it simply as: `uv run train.py`.
