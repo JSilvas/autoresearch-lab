@@ -68,4 +68,5 @@
 | [2026031758_finallr12](2026031758_finallr12.md) | 10a3dad | 1.372820 | discard | FINAL_LR_FRAC 0.08→0.12 (overshoots, 0.08 optimal) |
 | [2026031759_warmdown45](2026031759_warmdown45.md) | 2cfd433 | 1.372749 | discard | WARMDOWN_RATIO 0.50→0.45 (shorter warmdown, 0.50 optimal at S=64) |
 | [2026031760_warmdown55](2026031760_warmdown55.md) | d20b7f8 | 1.371455 | keep | WARMDOWN_RATIO 0.50→0.55 ← NEW BEST |
-| [2026031761_warmdown60](2026031761_warmdown60.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.55→0.60 (push further in winning direction) |
+| [2026031761_warmdown60](2026031761_warmdown60.md) | 3c283aa | 1.371320 | keep | WARMDOWN_RATIO 0.55→0.60 ← NEW BEST |
+| [2026031762_warmdown65](2026031762_warmdown65.md) | TBD | TBD | TBD | WARMDOWN_RATIO 0.60→0.65 (continue sweep) |
