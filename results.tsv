@@ -93,3 +93,4 @@ f36c808	1.407229	0.0	discard	Muon momentum 0.80->0.75 with beta1=0.7 (0.80 still
 07510af	1.444538	0.0	discard	sandwich norm post-block outputs (slower + worse)
 b23c6ef	1.406561	0.0	discard	ve_gate_channels 32->16 (32 better)
 98b0306	1.416507	0.0	discard	x0 skip after block instead of before (before better)
+e3df4f6	1.404409	0.0	discard	Muon momentum 0.80->0.82 (0.80 still optimal)
