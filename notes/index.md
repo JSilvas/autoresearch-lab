@@ -49,4 +49,6 @@
 | [2026031741_lss_window](2026031741_lss_window.md) | d894078 | 1.380756 | discard | WINDOW_PATTERN SSL→LSS (last-layer global attn is key) |
 | [2026031742_headdim96](2026031742_headdim96.md) | 1d8ad51 | 1.404089 | discard | HEAD_DIM 128→96 (2 heads much worse, 1 head preferred) |
 | [2026031743_no_ve](2026031743_no_ve.md) | 3866f73 | 1.431874 | discard | No VE — catastrophic (+0.056), VE is architecturally critical |
-| [2026031744_relu_plain](2026031744_relu_plain.md) | TBD | TBD | TBD | Activation ReLU²→ReLU (less sparse, more gradient flow) |
+| [2026031744_relu_plain](2026031744_relu_plain.md) | 386ae53 | 1.396303 | discard | ReLU²→ReLU (much worse, ReLU² is critical) |
+| **[insight_05_exp36to44](insight_05_exp36to44.md)** | — | — | insight | Exp36-44: all hyperaxes exhausted, architecture confirmed stable |
+| [2026031745_ve_lastonly](2026031745_ve_lastonly.md) | TBD | TBD | TBD | VE last-layer only (layer 2 only, fewer params) |

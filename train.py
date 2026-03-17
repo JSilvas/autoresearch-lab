@@ -66,7 +66,7 @@ def norm(x):
 
 def has_ve(layer_idx, n_layer):
     """Returns True if layer should have Value Embedding (alternating, last always included)."""
-    return layer_idx % 2 == (n_layer - 1) % 2
+    return layer_idx == n_layer - 1
 
 
 def apply_rotary_emb(x, cos, sin):
@@ -143,7 +143,7 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = self.c_fc(x)
-        x = F.relu(x)
+        x = F.relu(x).square()
         x = self.c_proj(x)
         return x
 
