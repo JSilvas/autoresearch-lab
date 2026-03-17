@@ -494,7 +494,7 @@ class MuonAdamW(torch.optim.Optimizer):
 # ---------------------------------------------------------------------------
 
 # Model architecture
-ASPECT_RATIO = 56       # model_dim = depth * ASPECT_RATIO
+ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=half context
 
@@ -604,7 +604,7 @@ def get_lr_multiplier(progress):
         return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
 
 def get_muon_momentum(step):
-    return 0.80  # constant, no ramp
+    return 0.75  # constant, no ramp
 
 def get_weight_decay(progress):
     return WEIGHT_DECAY * (1 - progress)

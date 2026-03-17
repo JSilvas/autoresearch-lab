@@ -44,4 +44,5 @@
 | [2026031736_beta2_99](2026031736_beta2_99.md) | b1cd8fa | 1.378974 | discard | ADAM beta2 0.95→0.99 (too slow) |
 | [2026031737_beta2_90](2026031737_beta2_90.md) | 37bf0d5 | 1.377939 | discard | ADAM beta2 0.95→0.90 (faster also worse, 0.95 optimal) |
 | [2026031738_mlp2x_depth3](2026031738_mlp2x_depth3.md) | a5e79ce | 1.382130 | discard | MLP 3x→2x at DEPTH=3 (capacity loss > step gain) |
-| [2026031739_aspect56](2026031739_aspect56.md) | TBD | TBD | TBD | ASPECT_RATIO 64→56 (dim 192→168) |
+| [2026031739_aspect56](2026031739_aspect56.md) | 2358e17 | 1.380076 | discard | ASPECT_RATIO 64→56 (dim 192→168, capacity loss) |
+| [2026031740_muonmom75](2026031740_muonmom75.md) | TBD | TBD | TBD | Muon momentum 0.80→0.75 |
