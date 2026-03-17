@@ -75,4 +75,5 @@
 | [2026031764_wd012](2026031764_wd012.md) | 8b156a5 | 1.371714 | discard | WEIGHT_DECAY 0.15→0.12 (too low, 0.15 robust) |
 | [2026031765_wd018](2026031765_wd018.md) | 2944d4a | 1.372381 | discard | WEIGHT_DECAY 0.15→0.18 (too high, 0.15 confirmed optimal) |
 | [2026031766_finallr06](2026031766_finallr06.md) | bd20a8f | 1.371321 | discard | FINAL_LR_FRAC 0.08→0.06 (0.08 optimal at WARMDOWN=0.65 too) |
-| [2026031767_beta170](2026031767_beta170.md) | TBD | TBD | TBD | ADAM beta1 0.75→0.70 (retune at S=64+WARMDOWN=0.65) |
+| [2026031767_beta170](2026031767_beta170.md) | 9b34506 | 1.371243 | discard | ADAM beta1 0.75→0.70 (marginal, 0.75 optimal) |
+| [2026031768_matrixlr090](2026031768_matrixlr090.md) | TBD | TBD | TBD | MATRIX_LR 0.095→0.090 (retune at WARMDOWN=0.65) |
