@@ -41,4 +41,5 @@
 | [2026031734_unembedlr008](2026031734_unembedlr008.md) | 8aec15b | 1.379705 | discard | UNEMBEDDING_LR 0.004→0.008 (too high) |
 | [2026031735_unembedlr002](2026031735_unembedlr002.md) | 31a876b | 1.389440 | discard | UNEMBEDDING_LR 0.004→0.002 (too low, 0.004 optimal) |
 | **[insight_04_exp30to35](insight_04_exp30to35.md)** | — | — | insight | Exp30-35: SCALAR_LR=0.7 new best, DEPTH=2 dead, UNEMBED_LR=0.004 optimal |
-| [2026031736_beta2_99](2026031736_beta2_99.md) | TBD | TBD | TBD | ADAM beta2 0.95→0.99 |
+| [2026031736_beta2_99](2026031736_beta2_99.md) | b1cd8fa | 1.378974 | discard | ADAM beta2 0.95→0.99 (too slow) |
+| [2026031737_beta2_90](2026031737_beta2_90.md) | TBD | TBD | TBD | ADAM beta2 0.95→0.90 |
