@@ -90,4 +90,5 @@
 | **[insight_09_exp72to77](insight_09_exp72to77.md)** | — | — | insight | Exp72-77: WARMDOWN×MATRIX_LR co-opt, joint best (0.080, 0.60)=1.369316 |
 | [2026031778_unembedlr006](2026031778_unembedlr006.md) | 163e271 | 1.369852 | discard | UNEMBEDDING_LR 0.004→0.006 (0.004 robust at new config) |
 | [2026031779_muonbeta2_90](2026031779_muonbeta2_90.md) | 0996160 | 1.369458 | discard | MUON_BETA2 0.95→0.90 (faster adapt worse, 0.95 optimal) |
-| [2026031780_muonbeta2_99](2026031780_muonbeta2_99.md) | TBD | TBD | TBD | MUON_BETA2 0.95→0.99 (bracket other direction) |
+| [2026031780_muonbeta2_99](2026031780_muonbeta2_99.md) | 5babaad | 1.370398 | discard | MUON_BETA2 0.95→0.99 (0.95 confirmed optimal, symmetric) |
+| [2026031781_sll_window](2026031781_sll_window.md) | TBD | TBD | TBD | WINDOW_PATTERN SSL→SLL (1 S layer vs 2, retune at S=64) |
