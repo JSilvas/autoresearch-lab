@@ -5,6 +5,6 @@
 **Code Change**: WARMDOWN_RATIO = 0.65 → 0.70
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.369773
+**Git Hash**: 03254d8
+**Verdict**: DISCARD. Still worse than 0.65 (+0.000287). Interaction confirmed: both WARMDOWN=0.65 and 0.70 improved with new MATRIX_LR, but ordering preserved. 0.65 remains optimal.
