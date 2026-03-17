@@ -44,3 +44,4 @@ d894078	1.380756	0.0	discard	WINDOW_PATTERN SSL->LSS (last-layer global context 
 386ae53	1.396303	0.0	discard	ReLU2->ReLU (much worse ReLU2 is critical)
 18e1901	1.382688	0.0	discard	VE last-layer only (layer 0 VE matters, 2/3 > 1/3)
 8dc32b8	1.386998	0.0	discard	VE all 3 layers (inverted-U 2/3 alternating optimal)
+93cfb09	1.375955	0.0	discard	EMBEDDING_LR 0.7->0.75 (marginal miss 0.7 optimal)
