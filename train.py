@@ -13,6 +13,22 @@ import time
 from dataclasses import dataclass, asdict
 
 import sys
+
+# Mirror all stdout to run.log so the monitor TUI can tail it from any terminal.
+_log_path = os.path.join(os.path.dirname(__file__) or ".", "run.log")
+_log_file = open(_log_path, "wb", buffering=0)
+
+class _Tee:
+    def __init__(self, stream, log): self._s, self._l = stream, log
+    def write(self, b):
+        n = self._s.write(b)
+        self._l.write(b.encode() if isinstance(b, str) else b)
+        return n
+    def flush(self): self._s.flush(); self._l.flush()
+    def fileno(self): return self._s.fileno()
+    def __getattr__(self, a): return getattr(self._s, a)
+
+sys.stdout = _Tee(sys.stdout, _log_file)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

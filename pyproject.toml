@@ -15,4 +15,11 @@ dependencies = [
     "torch==2.6.0",
 ]
 
+[dependency-groups]
+monitor = [
+    "flytekit>=1.13",
+    "psutil>=6.0",
+    "textual>=0.80",
+]
+
 
