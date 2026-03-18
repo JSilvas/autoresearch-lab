@@ -65,6 +65,17 @@ def norm(x):
     return F.layer_norm(x, (x.size(-1),))
 
 
+class LearnableNorm(nn.Module):
+    """LayerNorm with learnable affine (gamma/beta), dtype-safe for MPS bfloat16."""
+    def __init__(self, n_embd):
+        super().__init__()
+        self.weight = nn.Parameter(torch.ones(n_embd))
+        self.bias = nn.Parameter(torch.zeros(n_embd))
+
+    def forward(self, x):
+        return F.layer_norm(x, (x.size(-1),), self.weight.to(x.dtype), self.bias.to(x.dtype))
+
+
 def has_ve(layer_idx, n_layer):
     """Returns True if layer should have Value Embedding (alternating, last always included)."""
     return layer_idx % 2 == (n_layer - 1) % 2
@@ -155,8 +166,8 @@ class Block(nn.Module):
         super().__init__()
         self.attn = CausalSelfAttention(config, layer_idx)
         self.mlp = MLP(config)
-        self.ln1 = nn.LayerNorm(config.n_embd)
-        self.ln2 = nn.LayerNorm(config.n_embd)
+        self.ln1 = LearnableNorm(config.n_embd)
+        self.ln2 = LearnableNorm(config.n_embd)
 
     def forward(self, x, ve, cos_sin, window_size):
         x = x + self.attn(self.ln1(x), ve, cos_sin, window_size)
@@ -174,8 +185,8 @@ class GPT(nn.Module):
             "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
         })
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.ln_emb = nn.LayerNorm(config.n_embd)
-        self.ln_out = nn.LayerNorm(config.n_embd)
+        self.ln_emb = LearnableNorm(config.n_embd)
+        self.ln_out = LearnableNorm(config.n_embd)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
         # Value embeddings
