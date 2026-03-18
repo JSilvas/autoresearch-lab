@@ -298,7 +298,7 @@ class GPT(nn.Module):
             group_params = [p for p in matrix_params if p.shape == shape]
             param_groups.append(dict(
                 kind='muon', params=group_params, lr=matrix_lr,
-                momentum=0.95, ns_steps=MUON_NS_STEPS, beta2=MUON_BETA2, weight_decay=weight_decay,
+                momentum=MUON_MOMENTUM, ns_steps=MUON_NS_STEPS, beta2=MUON_BETA2, weight_decay=weight_decay,
             ))
         optimizer = MuonAdamW(param_groups)
         for group in optimizer.param_groups:
@@ -505,7 +505,8 @@ TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
 EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
-MUON_NS_STEPS = 9       # Newton-Schulz iterations for Muon orthogonalization (default: 7)
+MUON_NS_STEPS = 7       # Newton-Schulz iterations for Muon orthogonalization (confirmed optimal)
+MUON_MOMENTUM = 0.90    # Nesterov momentum for Muon (was 0.95)
 MUON_BETA2 = 0.95       # second-order momentum for Muon matrix optimizer
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
