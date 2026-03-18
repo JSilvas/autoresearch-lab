@@ -73,7 +73,8 @@ class LearnableNorm(nn.Module):
         self.bias = nn.Parameter(torch.zeros(n_embd))
 
     def forward(self, x):
-        return F.layer_norm(x, (x.size(-1),), self.weight.to(x.dtype), self.bias.to(x.dtype))
+        # Cast to float32 for numerics, weight/bias stay float32, cast result back
+        return F.layer_norm(x.float(), (x.size(-1),), self.weight, self.bias).to(x.dtype)
 
 
 def has_ve(layer_idx, n_layer):
