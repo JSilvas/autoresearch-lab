@@ -5,6 +5,6 @@
 **Code Change**: get_weight_decay: WD*(1-progress) → WD*(1-progress)^0.5. LR schedule reverted to linear.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.372756
+**Git Hash**: 0ca90a0
+**Verdict**: DISCARD. Worse (+0.003440). Sqrt decay keeps WD too high for too long. WD shape confirmed: constant (+0.009), sqrt (+0.003), linear (best). Faster decay (beyond linear) untested but likely also worse.

@@ -100,4 +100,5 @@
 | [2026031787_rope_base1000](2026031787_rope_base1000.md) | af41296 | 1.382689 | discard | RoPE base=1000 catastrophic (+0.013), 10000 well-calibrated for seq_len=2048 |
 | [2026031788_muon_mom90_proper](2026031788_muon_mom90_proper.md) | 7c1e5ad | 1.374034 | discard | Muon momentum 0.80→0.90 much worse (+0.005), 0.80 confirmed optimal |
 | [2026031789_cosine_warmdown](2026031789_cosine_warmdown.md) | 3b02172 | 1.373255 | discard | Cosine warmdown worse (+0.004), linear schedule confirmed better |
-| [2026031790_wd_sqrt_decay](2026031790_wd_sqrt_decay.md) | TBD | TBD | TBD | WD sqrt decay WD*(1-p)^0.5 vs linear WD*(1-p) |
+| [2026031790_wd_sqrt_decay](2026031790_wd_sqrt_decay.md) | 0ca90a0 | 1.372756 | discard | WD sqrt decay worse (+0.003), confirms linear WD is optimal |
+| [2026031791_gelu](2026031791_gelu.md) | TBD | TBD | TBD | GELU activation (vs ReLU²) |

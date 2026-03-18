@@ -144,7 +144,7 @@ class MLP(nn.Module):
 
     def forward(self, x):
         x = self.c_fc(x)
-        x = F.relu(x).square()
+        x = F.gelu(x)
         x = self.c_proj(x)
         return x
 
@@ -614,7 +614,7 @@ def get_muon_momentum(step):
     return MUON_MOMENTUM  # constant, controlled by hyperparameter
 
 def get_weight_decay(progress):
-    return WEIGHT_DECAY * (1 - progress) ** 0.5
+    return WEIGHT_DECAY * (1 - progress)
 
 # ---------------------------------------------------------------------------
 # Training loop
