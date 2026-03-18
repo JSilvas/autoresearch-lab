@@ -81,3 +81,4 @@ f67b8f4	1.369316	0.0	keep	WARMDOWN_RATIO 0.65->0.60 retest (new best, optimum sh
 422255c	1.375563	0.0	discard	WINDOW_PATTERN SSL->SLL (both S layers critical at S=64)
 c95fee2	1.378674	0.0	discard	WD constant vs linear decay (linear critical, +0.009)
 56d7933	1.377671	0.0	discard	VE_LR=0.1 much worse (+0.008) — VE needs full EMBEDDING_LR=0.7
+ae24fb6	1.370364	0.0	discard	MUON_NS_STEPS=5 worse (+0.001), extra steps < orthogonalization quality
