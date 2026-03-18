@@ -88,3 +88,4 @@ af41296	1.382689	0.0	discard	RoPE base=1000 catastrophic (+0.013), 10000 optimal
 7c1e5ad	1.374034	0.0	discard	Muon momentum 0.80→0.90 much worse (+0.005), 0.80 confirmed optimal
 3b02172	1.373255	0.0	discard	Cosine warmdown worse (+0.004), linear schedule optimal
 0ca90a0	1.372756	0.0	discard	WD sqrt decay worse (+0.003), confirms linear WD optimal
+ea74421	1.375996	0.0	discard	GELU worse (+0.007), ReLU² optimal (ReLU²>GELU>ReLU)
