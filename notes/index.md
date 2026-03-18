@@ -93,4 +93,5 @@
 | [2026031780_muonbeta2_99](2026031780_muonbeta2_99.md) | 5babaad | 1.370398 | discard | MUON_BETA2 0.95→0.99 (0.95 confirmed optimal, symmetric) |
 | [2026031781_sll_window](2026031781_sll_window.md) | 422255c | 1.375563 | discard | WINDOW_PATTERN SSL→SLL (both S layers critical at S=64) |
 | [2026031782_wd_constant](2026031782_wd_constant.md) | c95fee2 | 1.378674 | discard | WD constant (+0.009) — linear decay-to-zero is critical |
-| [2026031783_velr01](2026031783_velr01.md) | TBD | TBD | TBD | VE_LR=0.1 (decouple value embed LR from token embed LR) |
+| [2026031783_velr01](2026031783_velr01.md) | 56d7933 | 1.377671 | discard | VE_LR=0.1 much worse (+0.008) — VE needs full EMBEDDING_LR |
+| [2026031784_ns_steps5](2026031784_ns_steps5.md) | TBD | TBD | TBD | MUON_NS_STEPS=7→5 (fewer Newton-Schulz iters, original Muon default) |
