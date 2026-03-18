@@ -516,7 +516,7 @@ ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
 WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
 WARMDOWN_RATIO = 0.60   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
-ATTN_TEMP_SCALE = 2.0   # attention temperature multiplier (vs default 1/sqrt(d))
+ATTN_TEMP_SCALE = 0.5   # attention temperature multiplier (vs default 1/sqrt(d))
 
 # Model size
 DEPTH = 3               # number of transformer layers
