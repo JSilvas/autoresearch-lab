@@ -96,5 +96,6 @@
 | [2026031783_velr01](2026031783_velr01.md) | 56d7933 | 1.377671 | discard | VE_LR=0.1 much worse (+0.008) — VE needs full EMBEDDING_LR |
 | [2026031784_ns_steps5](2026031784_ns_steps5.md) | ae24fb6 | 1.370364 | discard | MUON_NS_STEPS=7→5 worse (+0.001), extra steps < orthogonalization quality |
 | [2026031785_ns_steps9](2026031785_ns_steps9.md) | bc0e4f6 | 1.371058 | discard | MUON_NS_STEPS=9 worse (+0.002) — 7 is sweet spot (5→+0.001, 9→+0.002) |
-| [2026031786_muon_mom90](2026031786_muon_mom90.md) | 5a26351 | 1.371226 | discard | Muon momentum 0.95→0.90 worse (+0.002), 0.95 optimal |
-| [2026031787_rope_base1000](2026031787_rope_base1000.md) | TBD | TBD | TBD | RoPE base 10000→1000 (shorter-range positional focus) |
+| [2026031786_muon_mom90](2026031786_muon_mom90.md) | 5a26351 | 1.371226 | invalid | INVALID: get_muon_momentum() hardcodes 0.80, overrode param group — test was no-op |
+| [2026031787_rope_base1000](2026031787_rope_base1000.md) | af41296 | 1.382689 | discard | RoPE base=1000 catastrophic (+0.013), 10000 well-calibrated for seq_len=2048 |
+| [2026031788_muon_mom90_proper](2026031788_muon_mom90_proper.md) | TBD | TBD | TBD | Proper Muon momentum test: 0.80→0.90 via get_muon_momentum fix |

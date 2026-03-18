@@ -506,8 +506,8 @@ EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
 MUON_NS_STEPS = 7       # Newton-Schulz iterations for Muon orthogonalization (confirmed optimal)
-MUON_MOMENTUM = 0.95    # Nesterov momentum for Muon (confirmed optimal)
-ROPE_BASE = 1000        # RoPE base frequency (default: 10000, lower = shorter-range focus)
+MUON_MOMENTUM = 0.90    # Nesterov momentum for Muon (trying, default: 0.80)
+ROPE_BASE = 10000       # RoPE base frequency (default: 10000)
 MUON_BETA2 = 0.95       # second-order momentum for Muon matrix optimizer
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
@@ -611,7 +611,7 @@ def get_lr_multiplier(progress):
         return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
 
 def get_muon_momentum(step):
-    return 0.80  # constant, no ramp
+    return MUON_MOMENTUM  # constant, controlled by hyperparameter
 
 def get_weight_decay(progress):
     return WEIGHT_DECAY * (1 - progress)
