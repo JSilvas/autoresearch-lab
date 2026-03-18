@@ -5,6 +5,6 @@
 **Code Change**: get_lr_multiplier: linear warmdown → cosine warmdown. Also MUON_MOMENTUM reverted to 0.80.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.373255
+**Git Hash**: 3b02172
+**Verdict**: DISCARD. Worse (+0.003939). Cosine schedule decays LR faster in early warmdown, hurting convergence. Linear warmdown is confirmed better — the gradual linear decay matches the training dynamics better.

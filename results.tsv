@@ -86,3 +86,4 @@ bc0e4f6	1.371058	0.0	discard	MUON_NS_STEPS=9 worse (+0.002), sweet spot is 7 (5:
 5a26351	1.371226	0.0	invalid	INVALID: get_muon_momentum hardcodes 0.80, param group change was no-op
 af41296	1.382689	0.0	discard	RoPE base=1000 catastrophic (+0.013), 10000 optimal for seq=2048
 7c1e5ad	1.374034	0.0	discard	Muon momentum 0.80→0.90 much worse (+0.005), 0.80 confirmed optimal
+3b02172	1.373255	0.0	discard	Cosine warmdown worse (+0.004), linear schedule optimal

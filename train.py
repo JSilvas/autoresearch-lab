@@ -602,21 +602,19 @@ print(f"Gradient accumulation steps: {grad_accum_steps}")
 # Schedules (all based on progress = training_time / TIME_BUDGET)
 
 def get_lr_multiplier(progress):
-    import math
     if progress < WARMUP_RATIO:
         return progress / WARMUP_RATIO if WARMUP_RATIO > 0 else 1.0
     elif progress < 1.0 - WARMDOWN_RATIO:
         return 1.0
     else:
-        cooldown = (1.0 - progress) / WARMDOWN_RATIO  # 1.0 at start, 0.0 at end
-        cosine_scale = 0.5 * (1 + math.cos(math.pi * (1 - cooldown)))
-        return cosine_scale * (1.0 - FINAL_LR_FRAC) + FINAL_LR_FRAC
+        cooldown = (1.0 - progress) / WARMDOWN_RATIO
+        return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
 
 def get_muon_momentum(step):
     return MUON_MOMENTUM  # constant, controlled by hyperparameter
 
 def get_weight_decay(progress):
-    return WEIGHT_DECAY * (1 - progress)
+    return WEIGHT_DECAY * (1 - progress) ** 0.5
 
 # ---------------------------------------------------------------------------
 # Training loop

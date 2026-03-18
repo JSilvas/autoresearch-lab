@@ -99,4 +99,5 @@
 | [2026031786_muon_mom90](2026031786_muon_mom90.md) | 5a26351 | 1.371226 | invalid | INVALID: get_muon_momentum() hardcodes 0.80, overrode param group — test was no-op |
 | [2026031787_rope_base1000](2026031787_rope_base1000.md) | af41296 | 1.382689 | discard | RoPE base=1000 catastrophic (+0.013), 10000 well-calibrated for seq_len=2048 |
 | [2026031788_muon_mom90_proper](2026031788_muon_mom90_proper.md) | 7c1e5ad | 1.374034 | discard | Muon momentum 0.80→0.90 much worse (+0.005), 0.80 confirmed optimal |
-| [2026031789_cosine_warmdown](2026031789_cosine_warmdown.md) | TBD | TBD | TBD | Cosine warmdown schedule (vs current linear) |
+| [2026031789_cosine_warmdown](2026031789_cosine_warmdown.md) | 3b02172 | 1.373255 | discard | Cosine warmdown worse (+0.004), linear schedule confirmed better |
+| [2026031790_wd_sqrt_decay](2026031790_wd_sqrt_decay.md) | TBD | TBD | TBD | WD sqrt decay WD*(1-p)^0.5 vs linear WD*(1-p) |
