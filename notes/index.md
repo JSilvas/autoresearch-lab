@@ -107,4 +107,5 @@
 | [2026031794_z_loss](2026031794_z_loss.md) | 8fa58d5 | 1.386457 | discard | Z-loss (+0.017) — model needs sharp logits, regularization counterproductive |
 | [2026031795_attn_temp](2026031795_attn_temp.md) | 5d67fcd | 1.380086 | discard | Doubled attention temp (2/√d) worse (+0.011) — default scale better |
 | [2026031796_attn_temp_half](2026031796_attn_temp_half.md) | d289fe6 | 1.415616 | discard | Half attn temp (0.5/√d) much worse (+0.046) — default scale optimal |
-| [2026031797_half_batch](2026031797_half_batch.md) | TBD | TBD | TBD | TOTAL_BATCH_SIZE=16384 (2× more steps, same time budget) |
+| [2026031797_half_batch](2026031797_half_batch.md) | fix | 1.374779 | discard | Half batch (16K) +0.005 — more steps competitive but LR needs retuning |
+| [2026031798_learnable_layernorm](2026031798_learnable_layernorm.md) | TBD | TBD | TBD | Learnable LayerNorm affine (gamma/beta) — all 8 norms, LR=scalar×0.1 |

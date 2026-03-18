@@ -155,10 +155,12 @@ class Block(nn.Module):
         super().__init__()
         self.attn = CausalSelfAttention(config, layer_idx)
         self.mlp = MLP(config)
+        self.ln1 = nn.LayerNorm(config.n_embd)
+        self.ln2 = nn.LayerNorm(config.n_embd)
 
     def forward(self, x, ve, cos_sin, window_size):
-        x = x + self.attn(norm(x), ve, cos_sin, window_size)
-        x = x + self.mlp(norm(x))
+        x = x + self.attn(self.ln1(x), ve, cos_sin, window_size)
+        x = x + self.mlp(self.ln2(x))
         return x
 
 
@@ -172,6 +174,8 @@ class GPT(nn.Module):
             "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
         })
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
+        self.ln_emb = nn.LayerNorm(config.n_embd)
+        self.ln_out = nn.LayerNorm(config.n_embd)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
         # Value embeddings
@@ -277,21 +281,27 @@ class GPT(nn.Module):
     def setup_optimizer(self, unembedding_lr=0.004, embedding_lr=0.2, matrix_lr=0.02,
                         weight_decay=0.0, adam_betas=(0.8, 0.95), scalar_lr=0.5):
         model_dim = self.config.n_embd
-        matrix_params = list(self.transformer.h.parameters())
+        all_h_params = list(self.transformer.h.parameters())
+        matrix_params = [p for p in all_h_params if p.ndim >= 2]
+        ln_block_params = [p for p in all_h_params if p.ndim < 2]
+        ln_model_params = list(self.ln_emb.parameters()) + list(self.ln_out.parameters())
         value_embeds_params = list(self.value_embeds.parameters())
         embedding_params = list(self.transformer.wte.parameters())
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        assert len(list(self.parameters())) == (len(matrix_params) + len(embedding_params) +
-            len(lm_head_params) + len(value_embeds_params) + len(resid_params) + len(x0_params))
+        assert len(list(self.parameters())) == (len(matrix_params) + len(ln_block_params) +
+            len(ln_model_params) + len(embedding_params) + len(lm_head_params) +
+            len(value_embeds_params) + len(resid_params) + len(x0_params))
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
+        all_ln_params = ln_block_params + ln_model_params
         param_groups = [
             dict(kind='adamw', params=lm_head_params, lr=unembedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=embedding_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=value_embeds_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
+            dict(kind='adamw', params=all_ln_params, lr=scalar_lr * 0.1, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=resid_params, lr=scalar_lr * 0.01, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=x0_params, lr=scalar_lr, betas=(0.96, 0.95), eps=1e-10, weight_decay=0.0),
         ]
@@ -312,13 +322,13 @@ class GPT(nn.Module):
         cos_sin = self.cos[:, :T], self.sin[:, :T]
 
         x = self.transformer.wte(idx)
-        x = norm(x)
+        x = self.ln_emb(x)
         x0 = x
         for i, block in enumerate(self.transformer.h):
             x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
             x = block(x, ve, cos_sin, self.window_sizes[i])
-        x = norm(x)
+        x = self.ln_out(x)
 
         logits = self.lm_head(x)
         logits = logits.float()
@@ -502,8 +512,7 @@ WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 32  # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
 
 # Optimization
-TOTAL_BATCH_SIZE = 2**14 # ~16K tokens per optimizer step (2x more steps)
-DEVICE_BATCH_SIZE = 8   # halved to match new TOTAL_BATCH_SIZE (no grad accum)
+TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
 EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
@@ -521,6 +530,7 @@ ATTN_TEMP_SCALE = 1.0   # attention temperature multiplier (vs default 1/sqrt(d)
 
 # Model size
 DEPTH = 3               # number of transformer layers
+DEVICE_BATCH_SIZE = 16  # per-device batch size (reduce if OOM)
 
 # ---------------------------------------------------------------------------
 # Setup: tokenizer, model, optimizer, dataloader
