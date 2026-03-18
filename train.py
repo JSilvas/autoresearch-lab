@@ -497,7 +497,7 @@ class MuonAdamW(torch.optim.Optimizer):
 # Model architecture
 ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
-WINDOW_PATTERN = "SLL"  # sliding window pattern: L=full, S=short context
+WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 32  # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
 
 # Optimization
@@ -611,7 +611,7 @@ def get_muon_momentum(step):
     return 0.80  # constant, no ramp
 
 def get_weight_decay(progress):
-    return WEIGHT_DECAY * (1 - progress)
+    return WEIGHT_DECAY  # constant, no linear decay
 
 # ---------------------------------------------------------------------------
 # Training loop

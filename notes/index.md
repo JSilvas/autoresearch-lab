@@ -91,4 +91,5 @@
 | [2026031778_unembedlr006](2026031778_unembedlr006.md) | 163e271 | 1.369852 | discard | UNEMBEDDING_LR 0.004→0.006 (0.004 robust at new config) |
 | [2026031779_muonbeta2_90](2026031779_muonbeta2_90.md) | 0996160 | 1.369458 | discard | MUON_BETA2 0.95→0.90 (faster adapt worse, 0.95 optimal) |
 | [2026031780_muonbeta2_99](2026031780_muonbeta2_99.md) | 5babaad | 1.370398 | discard | MUON_BETA2 0.95→0.99 (0.95 confirmed optimal, symmetric) |
-| [2026031781_sll_window](2026031781_sll_window.md) | TBD | TBD | TBD | WINDOW_PATTERN SSL→SLL (1 S layer vs 2, retune at S=64) |
+| [2026031781_sll_window](2026031781_sll_window.md) | 422255c | 1.375563 | discard | WINDOW_PATTERN SSL→SLL (both S layers critical at S=64) |
+| [2026031782_wd_constant](2026031782_wd_constant.md) | TBD | TBD | TBD | WD constant vs linear decay (more regularization in warmdown) |
