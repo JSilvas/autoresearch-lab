@@ -5,6 +5,6 @@
 **Code Change**: Block: add self.ln1/ln2 = nn.LayerNorm(n_embd). GPT: add self.ln_emb/ln_out = nn.LayerNorm(n_embd). setup_optimizer: split transformer.h params by ndim (2D→Muon, 1D→AdamW). TOTAL_BATCH_SIZE/DEVICE_BATCH_SIZE reverted.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: N/A (training never converged — loss stuck at 7.38 through 196 steps, identical to broken attempt 2)
+**Git Hash**: d88cf25
+**Verdict**: DISCARD — learnable LayerNorm fundamentally broken on MPS bfloat16. Three attempts: (1) nn.LayerNorm → mps.multiply dtype crash; (2) weight.to(x.dtype) → silent grad fail via autocast interference; (3) x.float() → same stuck-loss 7.38 pattern. Root cause unclear but likely MPS-specific gradient issue with float32↔bfloat16 cast chain. Stateless norm() is fine and avoids the problem entirely.

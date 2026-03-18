@@ -95,3 +95,4 @@ ea74421	1.375996	0.0	discard	GELU worse (+0.007), ReLU² optimal (ReLU²>GELU>Re
 5d67fcd	1.380086	0.0	discard	Attn temp 2x/√d sharper (+0.011) — default scale optimal
 d289fe6	1.415616	0.0	discard	Attn temp 0.5x/√d softer (+0.046) — 1/√d confirmed optimal
 fix	1.374779	0.0	discard	Half batch TOTAL_BS=16384 (+0.005) — more steps but gradient noise
+d88cf25	N/A	0.0	discard	Learnable LayerNorm (3 attempts all broken: MPS crash / silent grad fail / x.float() same stuck loss 7.38)

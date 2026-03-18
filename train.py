@@ -66,15 +66,17 @@ def norm(x):
 
 
 class LearnableNorm(nn.Module):
-    """LayerNorm with learnable affine (gamma/beta), dtype-safe for MPS bfloat16."""
+    """Affine LayerNorm using manual ops to avoid MPS F.layer_norm(params) backward bug."""
     def __init__(self, n_embd):
         super().__init__()
         self.weight = nn.Parameter(torch.ones(n_embd))
         self.bias = nn.Parameter(torch.zeros(n_embd))
 
     def forward(self, x):
-        # Cast to float32 for numerics, weight/bias stay float32, cast result back
-        return F.layer_norm(x.float(), (x.size(-1),), self.weight, self.bias).to(x.dtype)
+        u = x.mean(-1, keepdim=True)
+        s = (x - u).pow(2).mean(-1, keepdim=True)
+        x = (x - u) * (s + 1e-5).rsqrt()
+        return self.weight * x + self.bias
 
 
 def has_ve(layer_idx, n_layer):
@@ -134,15 +136,14 @@ class CausalSelfAttention(nn.Module):
         v = v.transpose(1, 2)
         
         # Apply mask for sliding window
-        attn_scale = ATTN_TEMP_SCALE / (self.head_dim ** 0.5)
         window = window_size[0]
         if window > 0 and window < T:
             # Mask out tokens outside the window
             mask = torch.ones(T, T, dtype=torch.bool, device=q.device).tril()
             mask = mask.triu(diagonal=1 - window)
-            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask, scale=attn_scale)
+            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
         else:
-            y = F.scaled_dot_product_attention(q, k, v, is_causal=True, scale=attn_scale)
+            y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
             
         y = y.transpose(1, 2).contiguous().view(B, T, -1)
         y = self.c_proj(y)
@@ -186,10 +187,10 @@ class GPT(nn.Module):
             "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
         })
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.ln_emb = LearnableNorm(config.n_embd)
-        self.ln_out = LearnableNorm(config.n_embd)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
+        self.ln_emb = LearnableNorm(config.n_embd)
+        self.ln_out = LearnableNorm(config.n_embd)
         # Value embeddings
         head_dim = config.n_embd // config.n_head
         kv_dim = config.n_kv_head * head_dim
@@ -199,7 +200,7 @@ class GPT(nn.Module):
         })
         # Rotary embeddings
         self.rotary_seq_len = config.sequence_len * 10
-        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim, base=ROPE_BASE)
+        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
 
@@ -230,7 +231,7 @@ class GPT(nn.Module):
                 torch.nn.init.zeros_(block.attn.ve_gate.weight)
         # Rotary embeddings
         head_dim = self.config.n_embd // self.config.n_head
-        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim, base=ROPE_BASE)
+        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
         self.cos, self.sin = cos, sin
         # Cast embeddings to bf16
         self.transformer.wte.to(dtype=torch.bfloat16)
@@ -302,13 +303,13 @@ class GPT(nn.Module):
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        assert len(list(self.parameters())) == (len(matrix_params) + len(ln_block_params) +
-            len(ln_model_params) + len(embedding_params) + len(lm_head_params) +
-            len(value_embeds_params) + len(resid_params) + len(x0_params))
+        all_ln_params = ln_block_params + ln_model_params
+        assert len(list(self.parameters())) == (len(matrix_params) + len(all_ln_params) +
+            len(embedding_params) + len(lm_head_params) + len(value_embeds_params) +
+            len(resid_params) + len(x0_params))
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
-        all_ln_params = ln_block_params + ln_model_params
         param_groups = [
             dict(kind='adamw', params=lm_head_params, lr=unembedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=embedding_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
@@ -321,7 +322,7 @@ class GPT(nn.Module):
             group_params = [p for p in matrix_params if p.shape == shape]
             param_groups.append(dict(
                 kind='muon', params=group_params, lr=matrix_lr,
-                momentum=MUON_MOMENTUM, ns_steps=MUON_NS_STEPS, beta2=MUON_BETA2, weight_decay=weight_decay,
+                momentum=0.95, ns_steps=7, beta2=0.95, weight_decay=weight_decay,
             ))
         optimizer = MuonAdamW(param_groups)
         for group in optimizer.param_groups:
@@ -528,17 +529,12 @@ TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
 EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
-MUON_NS_STEPS = 7       # Newton-Schulz iterations for Muon orthogonalization (confirmed optimal)
-MUON_MOMENTUM = 0.80    # Nesterov momentum for Muon (confirmed optimal)
-ROPE_BASE = 10000       # RoPE base frequency (default: 10000)
-MUON_BETA2 = 0.95       # second-order momentum for Muon matrix optimizer
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
 ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
 WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
 WARMDOWN_RATIO = 0.60   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
-ATTN_TEMP_SCALE = 1.0   # attention temperature multiplier (vs default 1/sqrt(d))
 
 # Model size
 DEPTH = 3               # number of transformer layers
@@ -635,7 +631,7 @@ def get_lr_multiplier(progress):
         return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
 
 def get_muon_momentum(step):
-    return MUON_MOMENTUM  # constant, controlled by hyperparameter
+    return 0.80  # constant, no ramp
 
 def get_weight_decay(progress):
     return WEIGHT_DECAY * (1 - progress)
