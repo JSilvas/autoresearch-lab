@@ -5,6 +5,6 @@
 **Code Change**: Add SHORT_WINDOW_FRAC_2=16 (S2=128). Modify _compute_window_sizes to alternate S layers between frac_1 (S=64) and frac_2 (S=128). Layer 0: S=64, Layer 1: S=128, Layer 2: L=2048.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: 1.368544 (Δ-0.000772 vs 1.369316 baseline)
+**Git Hash**: de57d62
+**Verdict**: KEEP — multi-scale hierarchy (S=64 local + S=128 medium + L=2048 global) outperforms uniform S=64. Confirms value of hierarchical attention: different layers benefit from different context granularities. Next: try reversed order (S=128, S=64) and wider spread (S=64, S=256).
