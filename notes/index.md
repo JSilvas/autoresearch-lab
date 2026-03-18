@@ -109,4 +109,5 @@
 | [2026031796_attn_temp_half](2026031796_attn_temp_half.md) | d289fe6 | 1.415616 | discard | Half attn temp (0.5/√d) much worse (+0.046) — default scale optimal |
 | [2026031797_half_batch](2026031797_half_batch.md) | fix | 1.374779 | discard | Half batch (16K) +0.005 — more steps competitive but LR needs retuning |
 | [2026031798_learnable_layernorm](2026031798_learnable_layernorm.md) | d88cf25 | N/A | discard | Learnable LayerNorm (3 attempts: MPS crash / silent grad / x.float() — all fail same stuck-loss 7.38) |
-| [2026031799_learnable_layernorm_manual](2026031799_learnable_layernorm_manual.md) | TBD | TBD | TBD | Manual LayerNorm (avoid MPS F.layer_norm(params) backward bug via mean/var/rsqrt ops) |
+| [2026031799_learnable_layernorm_manual](2026031799_learnable_layernorm_manual.md) | cef5777 | N/A | discard | Manual LearnableNorm (4th fail, same stuck-loss 7.37 at lrm=0.72 — MPS gradient bug, permanently abandoned) |
+| [20260317100_multiscale_windows](20260317100_multiscale_windows.md) | TBD | TBD | TBD | Multi-scale short windows: S=64 (local) + S=128 (medium) + L=2048 (global) hierarchy |

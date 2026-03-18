@@ -58,25 +58,12 @@ class GPTConfig:
     n_kv_head: int = 6
     n_embd: int = 768
     window_pattern: str = "SSSL"
-    short_window_frac: int = 2  # S window = seq_len // short_window_frac
+    short_window_frac: int = 2   # S window = seq_len // short_window_frac
+    short_window_frac_2: int = 0  # 2nd S window frac (0 = same as frac_1)
 
 
 def norm(x):
     return F.layer_norm(x, (x.size(-1),))
-
-
-class LearnableNorm(nn.Module):
-    """Affine LayerNorm using manual ops to avoid MPS F.layer_norm(params) backward bug."""
-    def __init__(self, n_embd):
-        super().__init__()
-        self.weight = nn.Parameter(torch.ones(n_embd))
-        self.bias = nn.Parameter(torch.zeros(n_embd))
-
-    def forward(self, x):
-        u = x.mean(-1, keepdim=True)
-        s = (x - u).pow(2).mean(-1, keepdim=True)
-        x = (x - u) * (s + 1e-5).rsqrt()
-        return self.weight * x + self.bias
 
 
 def has_ve(layer_idx, n_layer):
@@ -168,12 +155,10 @@ class Block(nn.Module):
         super().__init__()
         self.attn = CausalSelfAttention(config, layer_idx)
         self.mlp = MLP(config)
-        self.ln1 = LearnableNorm(config.n_embd)
-        self.ln2 = LearnableNorm(config.n_embd)
 
     def forward(self, x, ve, cos_sin, window_size):
-        x = x + self.attn(self.ln1(x), ve, cos_sin, window_size)
-        x = x + self.mlp(self.ln2(x))
+        x = x + self.attn(norm(x), ve, cos_sin, window_size)
+        x = x + self.mlp(norm(x))
         return x
 
 
@@ -189,8 +174,6 @@ class GPT(nn.Module):
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
-        self.ln_emb = LearnableNorm(config.n_embd)
-        self.ln_out = LearnableNorm(config.n_embd)
         # Value embeddings
         head_dim = config.n_embd // config.n_head
         kv_dim = config.n_kv_head * head_dim
@@ -254,12 +237,17 @@ class GPT(nn.Module):
         pattern = config.window_pattern.upper()
         assert all(c in "SL" for c in pattern)
         long_window = config.sequence_len
-        short_window = long_window // config.short_window_frac
-        char_to_window = {"L": (long_window, 0), "S": (short_window, 0)}
+        frac2 = config.short_window_frac_2 if config.short_window_frac_2 else config.short_window_frac
+        short_windows = [long_window // config.short_window_frac, long_window // frac2]
         window_sizes = []
+        s_count = 0
         for layer_idx in range(config.n_layer):
             char = pattern[layer_idx % len(pattern)]
-            window_sizes.append(char_to_window[char])
+            if char == 'S':
+                window_sizes.append((short_windows[s_count % 2], 0))
+                s_count += 1
+            else:
+                window_sizes.append((long_window, 0))
         window_sizes[-1] = (long_window, 0)
         return window_sizes
 
@@ -294,19 +282,14 @@ class GPT(nn.Module):
     def setup_optimizer(self, unembedding_lr=0.004, embedding_lr=0.2, matrix_lr=0.02,
                         weight_decay=0.0, adam_betas=(0.8, 0.95), scalar_lr=0.5):
         model_dim = self.config.n_embd
-        all_h_params = list(self.transformer.h.parameters())
-        matrix_params = [p for p in all_h_params if p.ndim >= 2]
-        ln_block_params = [p for p in all_h_params if p.ndim < 2]
-        ln_model_params = list(self.ln_emb.parameters()) + list(self.ln_out.parameters())
+        matrix_params = list(self.transformer.h.parameters())
         value_embeds_params = list(self.value_embeds.parameters())
         embedding_params = list(self.transformer.wte.parameters())
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        all_ln_params = ln_block_params + ln_model_params
-        assert len(list(self.parameters())) == (len(matrix_params) + len(all_ln_params) +
-            len(embedding_params) + len(lm_head_params) + len(value_embeds_params) +
-            len(resid_params) + len(x0_params))
+        assert len(list(self.parameters())) == (len(matrix_params) + len(embedding_params) +
+            len(lm_head_params) + len(value_embeds_params) + len(resid_params) + len(x0_params))
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
@@ -314,7 +297,6 @@ class GPT(nn.Module):
             dict(kind='adamw', params=lm_head_params, lr=unembedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=embedding_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=value_embeds_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=all_ln_params, lr=scalar_lr * 0.1, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=resid_params, lr=scalar_lr * 0.01, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=x0_params, lr=scalar_lr, betas=(0.96, 0.95), eps=1e-10, weight_decay=0.0),
         ]
@@ -335,13 +317,13 @@ class GPT(nn.Module):
         cos_sin = self.cos[:, :T], self.sin[:, :T]
 
         x = self.transformer.wte(idx)
-        x = self.ln_emb(x)
+        x = norm(x)
         x0 = x
         for i, block in enumerate(self.transformer.h):
             x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
             x = block(x, ve, cos_sin, self.window_sizes[i])
-        x = self.ln_out(x)
+        x = norm(x)
 
         logits = self.lm_head(x)
         logits = logits.float()
@@ -522,7 +504,8 @@ class MuonAdamW(torch.optim.Optimizer):
 ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
 HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
-SHORT_WINDOW_FRAC = 32  # divisor for short window: S=seq_len//SHORT_WINDOW_FRAC
+SHORT_WINDOW_FRAC = 32  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 64
+SHORT_WINDOW_FRAC_2 = 16  # divisor for 2nd short window: S2=seq_len//FRAC_2 = 128
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
@@ -578,6 +561,7 @@ def build_model_config(depth):
         n_layer=depth, n_head=num_heads, n_kv_head=num_heads, n_embd=model_dim,
         window_pattern=WINDOW_PATTERN,
         short_window_frac=SHORT_WINDOW_FRAC,
+        short_window_frac_2=SHORT_WINDOW_FRAC_2,
     )
 
 config = build_model_config(DEPTH)
