@@ -506,7 +506,7 @@ EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
 MUON_NS_STEPS = 7       # Newton-Schulz iterations for Muon orthogonalization (confirmed optimal)
-MUON_MOMENTUM = 0.90    # Nesterov momentum for Muon (trying, default: 0.80)
+MUON_MOMENTUM = 0.80    # Nesterov momentum for Muon (confirmed optimal)
 ROPE_BASE = 10000       # RoPE base frequency (default: 10000)
 MUON_BETA2 = 0.95       # second-order momentum for Muon matrix optimizer
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
@@ -602,13 +602,15 @@ print(f"Gradient accumulation steps: {grad_accum_steps}")
 # Schedules (all based on progress = training_time / TIME_BUDGET)
 
 def get_lr_multiplier(progress):
+    import math
     if progress < WARMUP_RATIO:
         return progress / WARMUP_RATIO if WARMUP_RATIO > 0 else 1.0
     elif progress < 1.0 - WARMDOWN_RATIO:
         return 1.0
     else:
-        cooldown = (1.0 - progress) / WARMDOWN_RATIO
-        return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
+        cooldown = (1.0 - progress) / WARMDOWN_RATIO  # 1.0 at start, 0.0 at end
+        cosine_scale = 0.5 * (1 + math.cos(math.pi * (1 - cooldown)))
+        return cosine_scale * (1.0 - FINAL_LR_FRAC) + FINAL_LR_FRAC
 
 def get_muon_momentum(step):
     return MUON_MOMENTUM  # constant, controlled by hyperparameter

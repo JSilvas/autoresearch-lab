@@ -5,6 +5,6 @@
 **Code Change**: get_muon_momentum returns MUON_MOMENTUM=0.90 (was hardcoded 0.80). ROPE_BASE=10000 (restored). Exp87/Exp86 bugs documented.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.374034
+**Git Hash**: 7c1e5ad
+**Verdict**: DISCARD. Much worse (+0.004718). Muon momentum axis at current optimum: 0.75 worse (Exp40), 0.80 BEST, 0.85 worse (Exp24), 0.90 much worse. 0.80 is confirmed optimal, don't try again.
