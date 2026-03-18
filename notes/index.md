@@ -102,4 +102,5 @@
 | [2026031789_cosine_warmdown](2026031789_cosine_warmdown.md) | 3b02172 | 1.373255 | discard | Cosine warmdown worse (+0.004), linear schedule confirmed better |
 | [2026031790_wd_sqrt_decay](2026031790_wd_sqrt_decay.md) | 0ca90a0 | 1.372756 | discard | WD sqrt decay worse (+0.003), confirms linear WD is optimal |
 | [2026031791_gelu](2026031791_gelu.md) | ea74421 | 1.375996 | discard | GELU worse (+0.007), activation rank: ReLU²>GELU>ReLU |
-| [2026031792_ve_gate_full](2026031792_ve_gate_full.md) | TBD | TBD | TBD | VE gate full width (64→256 channels) |
+| [2026031792_ve_gate_full](2026031792_ve_gate_full.md) | 9f6f262 | 1.376281 | discard | VE gate 64→256 worse (+0.007), narrow gate is better |
+| [2026031793_parallel_blocks](2026031793_parallel_blocks.md) | TBD | TBD | TBD | Parallel attn+MLP blocks (PaLM style, same residual add) |
