@@ -83,3 +83,4 @@ c95fee2	1.378674	0.0	discard	WD constant vs linear decay (linear critical, +0.00
 56d7933	1.377671	0.0	discard	VE_LR=0.1 much worse (+0.008) — VE needs full EMBEDDING_LR=0.7
 ae24fb6	1.370364	0.0	discard	MUON_NS_STEPS=5 worse (+0.001), extra steps < orthogonalization quality
 bc0e4f6	1.371058	0.0	discard	MUON_NS_STEPS=9 worse (+0.002), sweet spot is 7 (5: +0.001, 7: best, 9: +0.002)
+5a26351	1.371226	0.0	discard	Muon momentum 0.95→0.90 worse (+0.002), 0.95 optimal

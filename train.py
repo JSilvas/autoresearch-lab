@@ -182,7 +182,7 @@ class GPT(nn.Module):
         })
         # Rotary embeddings
         self.rotary_seq_len = config.sequence_len * 10
-        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
+        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim, base=ROPE_BASE)
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
 
@@ -213,7 +213,7 @@ class GPT(nn.Module):
                 torch.nn.init.zeros_(block.attn.ve_gate.weight)
         # Rotary embeddings
         head_dim = self.config.n_embd // self.config.n_head
-        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
+        cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim, base=ROPE_BASE)
         self.cos, self.sin = cos, sin
         # Cast embeddings to bf16
         self.transformer.wte.to(dtype=torch.bfloat16)
@@ -506,7 +506,8 @@ EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
 MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
 MUON_NS_STEPS = 7       # Newton-Schulz iterations for Muon orthogonalization (confirmed optimal)
-MUON_MOMENTUM = 0.90    # Nesterov momentum for Muon (was 0.95)
+MUON_MOMENTUM = 0.95    # Nesterov momentum for Muon (confirmed optimal)
+ROPE_BASE = 1000        # RoPE base frequency (default: 10000, lower = shorter-range focus)
 MUON_BETA2 = 0.95       # second-order momentum for Muon matrix optimizer
 SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
