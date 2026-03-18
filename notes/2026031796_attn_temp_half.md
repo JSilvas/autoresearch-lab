@@ -5,6 +5,6 @@
 **Code Change**: ATTN_TEMP_SCALE: 2.0 → 0.5.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.415616
+**Git Hash**: (previous commit)
+**Verdict**: DISCARD. Much worse (+0.046300). Softer attention (0.5×) is far more damaging than sharper (2.0×, +0.011). Attention temperature axis fully bracketed: 0.5×(+0.046) < 1.0×(best) < 2.0×(+0.011). Default scale 1/√d is unambiguously optimal. Selective attention matters; diffuse attention hurts badly.
