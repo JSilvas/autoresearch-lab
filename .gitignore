@@ -21,4 +21,4 @@ dev/
 
 # Checkpoints and logs
 checkpoint*
-run.log
+*.log
