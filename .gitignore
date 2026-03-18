@@ -23,3 +23,6 @@ dev/
 checkpoint*
 *.log
 run.log
+
+# other
+.DS_Store
