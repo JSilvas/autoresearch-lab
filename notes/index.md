@@ -104,4 +104,5 @@
 | [2026031791_gelu](2026031791_gelu.md) | ea74421 | 1.375996 | discard | GELU worse (+0.007), activation rank: ReLU²>GELU>ReLU |
 | [2026031792_ve_gate_full](2026031792_ve_gate_full.md) | 9f6f262 | 1.376281 | discard | VE gate 64→256 worse (+0.007), narrow gate is better |
 | [2026031793_parallel_blocks](2026031793_parallel_blocks.md) | 83ba44f | 1.387348 | discard | Parallel attn+MLP blocks (+0.018) — sequential path critical |
-| [2026031794_z_loss](2026031794_z_loss.md) | TBD | TBD | TBD | Z-loss logit regularization (PaLM-style, Z_LOSS_COEFF=1e-4) |
+| [2026031794_z_loss](2026031794_z_loss.md) | 8fa58d5 | 1.386457 | discard | Z-loss (+0.017) — model needs sharp logits, regularization counterproductive |
+| [2026031795_attn_temp](2026031795_attn_temp.md) | TBD | TBD | TBD | Doubled attention temperature (2/√d) — sharper attention post-QK-norm |

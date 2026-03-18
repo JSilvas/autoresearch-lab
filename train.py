@@ -122,14 +122,15 @@ class CausalSelfAttention(nn.Module):
         v = v.transpose(1, 2)
         
         # Apply mask for sliding window
+        attn_scale = ATTN_TEMP_SCALE / (self.head_dim ** 0.5)
         window = window_size[0]
         if window > 0 and window < T:
             # Mask out tokens outside the window
             mask = torch.ones(T, T, dtype=torch.bool, device=q.device).tril()
             mask = mask.triu(diagonal=1 - window)
-            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
+            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask, scale=attn_scale)
         else:
-            y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
+            y = F.scaled_dot_product_attention(q, k, v, is_causal=True, scale=attn_scale)
             
         y = y.transpose(1, 2).contiguous().view(B, T, -1)
         y = self.c_proj(y)
@@ -325,8 +326,7 @@ class GPT(nn.Module):
         if targets is not None:
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1),
                                    ignore_index=-1, reduction=reduction)
-            z_loss = Z_LOSS_COEFF * logits.logsumexp(dim=-1).pow(2).mean()
-            return loss + z_loss
+            return loss
         return logits
 
 # ---------------------------------------------------------------------------
@@ -516,7 +516,7 @@ ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
 WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
 WARMDOWN_RATIO = 0.60   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
-Z_LOSS_COEFF = 1e-4     # z-loss coefficient (logit regularization, PaLM-style)
+ATTN_TEMP_SCALE = 2.0   # attention temperature multiplier (vs default 1/sqrt(d))
 
 # Model size
 DEPTH = 3               # number of transformer layers

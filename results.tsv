@@ -91,3 +91,4 @@ af41296	1.382689	0.0	discard	RoPE base=1000 catastrophic (+0.013), 10000 optimal
 ea74421	1.375996	0.0	discard	GELU worse (+0.007), ReLU² optimal (ReLU²>GELU>ReLU)
 9f6f262	1.376281	0.0	discard	VE gate 64→256 worse (+0.007), narrow gate is better
 83ba44f	1.387348	0.0	discard	Parallel attn+MLP blocks (sequential path critical, +0.018)
+8fa58d5	1.386457	0.0	discard	Z-loss logit regularization (+0.017) — sharp logits critical
