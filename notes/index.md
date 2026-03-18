@@ -92,4 +92,5 @@
 | [2026031779_muonbeta2_90](2026031779_muonbeta2_90.md) | 0996160 | 1.369458 | discard | MUON_BETA2 0.95→0.90 (faster adapt worse, 0.95 optimal) |
 | [2026031780_muonbeta2_99](2026031780_muonbeta2_99.md) | 5babaad | 1.370398 | discard | MUON_BETA2 0.95→0.99 (0.95 confirmed optimal, symmetric) |
 | [2026031781_sll_window](2026031781_sll_window.md) | 422255c | 1.375563 | discard | WINDOW_PATTERN SSL→SLL (both S layers critical at S=64) |
-| [2026031782_wd_constant](2026031782_wd_constant.md) | TBD | TBD | TBD | WD constant vs linear decay (more regularization in warmdown) |
+| [2026031782_wd_constant](2026031782_wd_constant.md) | c95fee2 | 1.378674 | discard | WD constant (+0.009) — linear decay-to-zero is critical |
+| [2026031783_velr01](2026031783_velr01.md) | TBD | TBD | TBD | VE_LR=0.1 (decouple value embed LR from token embed LR) |
