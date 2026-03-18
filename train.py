@@ -156,8 +156,8 @@ class Block(nn.Module):
         self.mlp = MLP(config)
 
     def forward(self, x, ve, cos_sin, window_size):
-        nx = norm(x)
-        x = x + self.attn(nx, ve, cos_sin, window_size) + self.mlp(nx)
+        x = x + self.attn(norm(x), ve, cos_sin, window_size)
+        x = x + self.mlp(norm(x))
         return x
 
 
@@ -325,7 +325,8 @@ class GPT(nn.Module):
         if targets is not None:
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1),
                                    ignore_index=-1, reduction=reduction)
-            return loss
+            z_loss = Z_LOSS_COEFF * logits.logsumexp(dim=-1).pow(2).mean()
+            return loss + z_loss
         return logits
 
 # ---------------------------------------------------------------------------
@@ -515,6 +516,7 @@ ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
 WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
 WARMDOWN_RATIO = 0.60   # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
+Z_LOSS_COEFF = 1e-4     # z-loss coefficient (logit regularization, PaLM-style)
 
 # Model size
 DEPTH = 3               # number of transformer layers

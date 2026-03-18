@@ -5,6 +5,6 @@
 **Code Change**: Block.forward: sequential attn+mlp → parallel (both on norm(x), single residual add). VE gate channels reverted to 64.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: val_bpb=1.387348
+**Git Hash**: 83ba44f
+**Verdict**: DISCARD. Much worse (+0.018032). Parallel blocks failed badly — high training loss (~3.89-3.93 vs baseline ~3.84-3.87) throughout, and clear degradation on val_bpb. The sequential residual path is critical: attn must "fix up" the representation before MLP sees it. Parallel form removes this information flow.

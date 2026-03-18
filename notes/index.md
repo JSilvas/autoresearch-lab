@@ -103,4 +103,5 @@
 | [2026031790_wd_sqrt_decay](2026031790_wd_sqrt_decay.md) | 0ca90a0 | 1.372756 | discard | WD sqrt decay worse (+0.003), confirms linear WD is optimal |
 | [2026031791_gelu](2026031791_gelu.md) | ea74421 | 1.375996 | discard | GELU worse (+0.007), activation rank: ReLU²>GELU>ReLU |
 | [2026031792_ve_gate_full](2026031792_ve_gate_full.md) | 9f6f262 | 1.376281 | discard | VE gate 64→256 worse (+0.007), narrow gate is better |
-| [2026031793_parallel_blocks](2026031793_parallel_blocks.md) | TBD | TBD | TBD | Parallel attn+MLP blocks (PaLM style, same residual add) |
+| [2026031793_parallel_blocks](2026031793_parallel_blocks.md) | 83ba44f | 1.387348 | discard | Parallel attn+MLP blocks (+0.018) — sequential path critical |
+| [2026031794_z_loss](2026031794_z_loss.md) | TBD | TBD | TBD | Z-loss logit regularization (PaLM-style, Z_LOSS_COEFF=1e-4) |
