@@ -5,6 +5,6 @@
 **Code Change**: SHORT_WINDOW_FRAC=16 (S=128 first), SHORT_WINDOW_FRAC_2=32 (S=64 second). Layer 0: S=128, Layer 1: S=64, Layer 2: L=2048.
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: 1.370738 (Δ+0.002194 vs Exp100 best 1.368544)
+**Git Hash**: 94556e6
+**Verdict**: DISCARD — fine-to-coarse order (S=64 first, S=128 second) is significantly better than coarse-to-fine. Confirms Exp100 finding: local attention first, medium-range second is the correct hierarchy. Likely because layer 0 needs to extract local patterns before layer 1 can use them in broader context.

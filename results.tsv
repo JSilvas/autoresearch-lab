@@ -98,3 +98,4 @@ fix	1.374779	0.0	discard	Half batch TOTAL_BS=16384 (+0.005) — more steps but g
 d88cf25	N/A	0.0	discard	Learnable LayerNorm (3 attempts all broken: MPS crash / silent grad fail / x.float() same stuck loss 7.38)
 cef5777	N/A	0.0	discard	Manual LearnableNorm (4th attempt, same stuck-loss 7.37 at step 254 lrm=0.72 — MPS gradient bug unfixable)
 de57d62	1.368544	0.0	keep	Multi-scale windows S1=64 S2=128 (new best 1.368544 Δ-0.000772)
+94556e6	1.370738	0.0	discard	Reversed multi-scale S=128+S=64 worse (+0.002194) — fine-to-coarse order is critical

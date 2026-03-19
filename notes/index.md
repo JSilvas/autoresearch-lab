@@ -111,4 +111,5 @@
 | [2026031798_learnable_layernorm](2026031798_learnable_layernorm.md) | d88cf25 | N/A | discard | Learnable LayerNorm (3 attempts: MPS crash / silent grad / x.float() — all fail same stuck-loss 7.38) |
 | [2026031799_learnable_layernorm_manual](2026031799_learnable_layernorm_manual.md) | cef5777 | N/A | discard | Manual LearnableNorm (4th fail, same stuck-loss 7.37 at lrm=0.72 — MPS gradient bug, permanently abandoned) |
 | [20260317100_multiscale_windows](20260317100_multiscale_windows.md) | de57d62 | 1.368544 | keep | Multi-scale windows S1=64+S2=128 ← NEW BEST (Δ-0.000772) |
-| [20260317101_multiscale_reversed](20260317101_multiscale_reversed.md) | TBD | TBD | TBD | Reversed multi-scale: S=128 first, S=64 second (coarse-to-fine order) |
+| [20260317101_multiscale_reversed](20260317101_multiscale_reversed.md) | 94556e6 | 1.370738 | discard | Reversed S=128+S=64 worse (+0.002) — fine-to-coarse order critical |
+| [20260317102_multiscale_s64_s256](20260317102_multiscale_s64_s256.md) | TBD | TBD | TBD | Wider multi-scale: S=64 + S=256 (test if larger gap helps) |
