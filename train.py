@@ -63,7 +63,7 @@ class GPTConfig:
 
 
 def norm(x):
-    return F.layer_norm(x, (x.size(-1),))
+    return F.rms_norm(x, (x.size(-1),))
 
 
 def has_ve(layer_idx, n_layer):
