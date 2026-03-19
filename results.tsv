@@ -101,3 +101,4 @@ de57d62	1.368544	0.0	keep	Multi-scale windows S1=64 S2=128 (new best 1.368544 Δ
 94556e6	1.370738	0.0	discard	Reversed multi-scale S=128+S=64 worse (+0.002194) — fine-to-coarse order is critical
 eefe2ca	1.372970	0.0	discard	S=64+S=256 worse (+0.004) — S=128 is sweet spot for 2nd window (64<128<256 confirmed)
 33bfb6a	1.368062	0.0	keep	S=32+S=128 new best (1.368062 Δ-0.000482 vs S=64+S=128)
+3198bd3	1.369029	0.0	discard	S=16+S=128 worse (+0.001) — S=32 sweet spot for 1st window

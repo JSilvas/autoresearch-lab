@@ -114,4 +114,5 @@
 | [20260317101_multiscale_reversed](20260317101_multiscale_reversed.md) | 94556e6 | 1.370738 | discard | Reversed S=128+S=64 worse (+0.002) — fine-to-coarse order critical |
 | [20260317102_multiscale_s64_s256](20260317102_multiscale_s64_s256.md) | eefe2ca | 1.372970 | discard | S=64+S=256 worse (+0.004) — S=128 confirmed sweet spot for 2nd window |
 | [20260317103_multiscale_s32_s128](20260317103_multiscale_s32_s128.md) | 33bfb6a | 1.368062 | keep | S=32+S=128 ← NEW BEST (Δ-0.000482, finer local layer better) |
-| [20260317104_multiscale_s16_s128](20260317104_multiscale_s16_s128.md) | TBD | TBD | TBD | Even finer: S=16+S=128 (test if smaller 1st window continues to help) |
+| [20260317104_multiscale_s16_s128](20260317104_multiscale_s16_s128.md) | 3198bd3 | 1.369029 | discard | S=16+S=128 worse (+0.001) — S=32 sweet spot for 1st window |
+| [20260317105_s32_s64](20260317105_s32_s64.md) | TBD | TBD | TBD | Diagnostic: S=32+S=64 to confirm S=128 > S=64 for 2nd window |
