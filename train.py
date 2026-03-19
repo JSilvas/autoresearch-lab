@@ -109,8 +109,7 @@ class CausalSelfAttention(nn.Module):
             gate = 2 * torch.sigmoid(self.ve_gate(x[..., :self.ve_gate_channels]))
             v = v + gate.unsqueeze(-1) * ve
 
-        cos, sin = cos_sin
-        q, k = apply_rotary_emb(q, cos, sin), apply_rotary_emb(k, cos, sin)
+        # No rotary positional encoding — position is implicitly encoded via causal+window masks
         q, k = norm(q), norm(k)
 
         # PyTorch SDPA without FlashAttention 3
@@ -557,7 +556,8 @@ if device_type == "cuda":
 elif device_type == "cpu":
     autocast_ctx = torch.amp.autocast(device_type="cpu", dtype=torch.bfloat16)
 else:
-    autocast_ctx = torch.amp.autocast(device_type="mps", dtype=torch.bfloat16)
+    import contextlib
+    autocast_ctx = contextlib.nullcontext()
 
 H100_BF16_PEAK_FLOPS = 989.5e12
 
