@@ -112,4 +112,5 @@
 | [2026031799_learnable_layernorm_manual](2026031799_learnable_layernorm_manual.md) | cef5777 | N/A | discard | Manual LearnableNorm (4th fail, same stuck-loss 7.37 at lrm=0.72 — MPS gradient bug, permanently abandoned) |
 | [20260317100_multiscale_windows](20260317100_multiscale_windows.md) | de57d62 | 1.368544 | keep | Multi-scale windows S1=64+S2=128 ← NEW BEST (Δ-0.000772) |
 | [20260317101_multiscale_reversed](20260317101_multiscale_reversed.md) | 94556e6 | 1.370738 | discard | Reversed S=128+S=64 worse (+0.002) — fine-to-coarse order critical |
-| [20260317102_multiscale_s64_s256](20260317102_multiscale_s64_s256.md) | TBD | TBD | TBD | Wider multi-scale: S=64 + S=256 (test if larger gap helps) |
+| [20260317102_multiscale_s64_s256](20260317102_multiscale_s64_s256.md) | eefe2ca | 1.372970 | discard | S=64+S=256 worse (+0.004) — S=128 confirmed sweet spot for 2nd window |
+| [20260317103_multiscale_s32_s128](20260317103_multiscale_s32_s128.md) | TBD | TBD | TBD | Narrower 1st layer: S=32+S=128 (test very-local + medium hierarchy) |
