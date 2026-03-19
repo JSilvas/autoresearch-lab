@@ -5,6 +5,6 @@
 **Code Change**: MATRIX_LR 0.080→0.085. SHORT_WINDOW_FRAC=64 (S=32), SHORT_WINDOW_FRAC_2=16 (S=128).
 
 ---
-**Result**: TBD
-**Git Hash**: TBD
-**Verdict**: TBD
+**Result**: 1.372041 (Δ+0.004 vs S=32+S=128 best 1.368062)
+**Git Hash**: 36744a8
+**Verdict**: DISCARD — MATRIX_LR=0.085 much worse at multi-scale config. 0.080 confirmed as ceiling. Next: test 0.075 in case optimum shifted downward.

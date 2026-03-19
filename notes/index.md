@@ -117,4 +117,4 @@
 | [20260317104_multiscale_s16_s128](20260317104_multiscale_s16_s128.md) | 3198bd3 | 1.369029 | discard | S=16+S=128 worse (+0.001) — S=32 sweet spot for 1st window |
 | [20260317105_s32_s64](20260317105_s32_s64.md) | 705d820 | 1.371384 | discard | S=32+S=64 worse (+0.003) — S=128 optimal 2nd window confirmed |
 | **[insight_10_exp100to105](insight_10_exp100to105.md)** | — | — | insight | Exp100-105: multi-scale windows, optimal S=32+S=128+L (total Δ-0.00126 from baseline) |
-| [20260317106_matrixlr_085_multiscale](20260317106_matrixlr_085_multiscale.md) | TBD | TBD | TBD | MATRIX_LR 0.080→0.085 re-tune at S=32+S=128 config |
+| [20260317106_matrixlr_085_multiscale](20260317106_matrixlr_085_multiscale.md) | 36744a8 | 1.372041 | discard | MATRIX_LR 0.085 worse (+0.004) — 0.080 is ceiling, test 0.075 next |
