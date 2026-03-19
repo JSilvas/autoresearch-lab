@@ -310,7 +310,7 @@ class GPT(nn.Module):
             dict(kind='adamw', params=lm_head_params, lr=unembedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=embedding_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=value_embeds_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=resid_params, lr=scalar_lr * 0.01, betas=adam_betas, eps=1e-10, weight_decay=0.0),
+            dict(kind='adamw', params=resid_params, lr=scalar_lr * 0.1, betas=adam_betas, eps=1e-10, weight_decay=0.0),
             dict(kind='adamw', params=x0_params, lr=scalar_lr, betas=(0.96, 0.95), eps=1e-10, weight_decay=0.0),
         ]
         for shape in sorted({p.shape for p in matrix_params}):
@@ -519,7 +519,7 @@ HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 64  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 32
 SHORT_WINDOW_FRAC_2 = 16  # divisor for 2nd short window: S2=seq_len//FRAC_2 = 128
-MIXED_HEAD_WINDOWS = True  # head 0 gets S1=32, head 1 gets S2=128 within each S layer (intra-layer multi-scale)
+MIXED_HEAD_WINDOWS = False  # if True: head 0 gets S1=32, head 1 gets S2=128 within each S layer
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
