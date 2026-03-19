@@ -115,4 +115,6 @@
 | [20260317102_multiscale_s64_s256](20260317102_multiscale_s64_s256.md) | eefe2ca | 1.372970 | discard | S=64+S=256 worse (+0.004) — S=128 confirmed sweet spot for 2nd window |
 | [20260317103_multiscale_s32_s128](20260317103_multiscale_s32_s128.md) | 33bfb6a | 1.368062 | keep | S=32+S=128 ← NEW BEST (Δ-0.000482, finer local layer better) |
 | [20260317104_multiscale_s16_s128](20260317104_multiscale_s16_s128.md) | 3198bd3 | 1.369029 | discard | S=16+S=128 worse (+0.001) — S=32 sweet spot for 1st window |
-| [20260317105_s32_s64](20260317105_s32_s64.md) | TBD | TBD | TBD | Diagnostic: S=32+S=64 to confirm S=128 > S=64 for 2nd window |
+| [20260317105_s32_s64](20260317105_s32_s64.md) | 705d820 | 1.371384 | discard | S=32+S=64 worse (+0.003) — S=128 optimal 2nd window confirmed |
+| **[insight_10_exp100to105](insight_10_exp100to105.md)** | — | — | insight | Exp100-105: multi-scale windows, optimal S=32+S=128+L (total Δ-0.00126 from baseline) |
+| [20260317106_matrixlr_085_multiscale](20260317106_matrixlr_085_multiscale.md) | TBD | TBD | TBD | MATRIX_LR 0.080→0.085 re-tune at S=32+S=128 config |
