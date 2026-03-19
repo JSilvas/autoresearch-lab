@@ -60,6 +60,7 @@ class GPTConfig:
     window_pattern: str = "SSSL"
     short_window_frac: int = 2   # S window = seq_len // short_window_frac
     short_window_frac_2: int = 0  # 2nd S window frac (0 = same as frac_1)
+    mixed_head_windows: bool = False  # if True, head 0 gets frac_1 window, head 1 gets frac_2 window in all S layers
 
 
 def norm(x):
@@ -123,11 +124,19 @@ class CausalSelfAttention(nn.Module):
         v = v.transpose(1, 2)
         
         # Apply mask for sliding window
-        window = window_size[0]
-        if window > 0 and window < T:
+        # window_size = (w_all, w_h1): if w_h1 > 0, head 0 gets w_all and head 1 gets w_h1
+        w_all, w_h1 = window_size[0], window_size[1]
+        if w_h1 > 0:
+            # Per-head windows: build 4D mask [1, H, T, T]
+            base = torch.ones(T, T, dtype=torch.bool, device=q.device).tril()
+            m0 = base.triu(diagonal=1 - w_all) if (w_all > 0 and w_all < T) else base
+            m1 = base.triu(diagonal=1 - w_h1) if (w_h1 > 0 and w_h1 < T) else base
+            mask = torch.stack([m0, m1], dim=0).unsqueeze(0)  # [1, 2, T, T]
+            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
+        elif w_all > 0 and w_all < T:
             # Mask out tokens outside the window
             mask = torch.ones(T, T, dtype=torch.bool, device=q.device).tril()
-            mask = mask.triu(diagonal=1 - window)
+            mask = mask.triu(diagonal=1 - w_all)
             y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
         else:
             y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
@@ -244,7 +253,11 @@ class GPT(nn.Module):
         for layer_idx in range(config.n_layer):
             char = pattern[layer_idx % len(pattern)]
             if char == 'S':
-                window_sizes.append((short_windows[s_count % 2], 0))
+                if config.mixed_head_windows:
+                    # Head 0 gets short_windows[0], head 1 gets short_windows[1]
+                    window_sizes.append((short_windows[0], short_windows[1]))
+                else:
+                    window_sizes.append((short_windows[s_count % 2], 0))
                 s_count += 1
             else:
                 window_sizes.append((long_window, 0))
@@ -506,6 +519,7 @@ HEAD_DIM = 128          # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 64  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 32
 SHORT_WINDOW_FRAC_2 = 16  # divisor for 2nd short window: S2=seq_len//FRAC_2 = 128
+MIXED_HEAD_WINDOWS = True  # head 0 gets S1=32, head 1 gets S2=128 within each S layer (intra-layer multi-scale)
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
@@ -562,6 +576,7 @@ def build_model_config(depth):
         window_pattern=WINDOW_PATTERN,
         short_window_frac=SHORT_WINDOW_FRAC,
         short_window_frac_2=SHORT_WINDOW_FRAC_2,
+        mixed_head_windows=MIXED_HEAD_WINDOWS,
     )
 
 config = build_model_config(DEPTH)
@@ -656,7 +671,6 @@ while True:
         if group['kind'] == 'muon':
             group["momentum"] = muon_momentum
             group["weight_decay"] = muon_weight_decay
-    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
     optimizer.step()
     model.zero_grad(set_to_none=True)
 

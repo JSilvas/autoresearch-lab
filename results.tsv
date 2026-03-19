@@ -106,3 +106,4 @@ eefe2ca	1.372970	0.0	discard	S=64+S=256 worse (+0.004) — S=128 is sweet spot f
 36744a8	1.372041	0.0	discard	MATRIX_LR 0.080->0.085 at S=32+S=128 worse (+0.004) — 0.080 still optimal
 ba7d6f4	1.370853	0.0	discard	MATRIX_LR 0.080->0.075 at S=32+S=128 worse (+0.003) — 0.080 confirmed optimal at multi-scale
 15306eb	1.393843	0.0	discard	RMSNorm worse (+0.026) — mean-centering is critical; ReLU² non-neg activations need LayerNorm centering
+db562b5	1.378656	0.0	discard	Gradient clipping (+0.011) — MuonAdamW already normalizes; clip_grad_norm_ interferes with Muon+Adam
