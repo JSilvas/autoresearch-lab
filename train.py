@@ -144,7 +144,7 @@ class CausalSelfAttention(nn.Module):
                 causal_bool = causal_bool & causal_bool.triu(-(w_all - 1))
             float_mask = causal_bool.float().log()  # 0 or -inf [T, T]
             alibi = -self.alibi_slopes.view(-1, 1, 1) * dist.unsqueeze(0)  # [n_head, T, T]
-            mask = float_mask.unsqueeze(0) + alibi  # [n_head, T, T]
+            mask = (float_mask.unsqueeze(0) + alibi).to(dtype=q.dtype)  # match q dtype for MPS
             y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask.unsqueeze(0))
         elif w_h1 > 0:
             # Per-head windows: build 4D mask [1, H, T, T]
