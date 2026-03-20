@@ -110,3 +110,4 @@ db562b5	1.378656	0.0	discard	Gradient clipping (+0.011) — MuonAdamW already no
 98b31bf	1.380770	0.0	discard	Mixed-head windows (+0.013) — intra-layer multi-scale loses compositional hierarchy vs inter-layer
 8f2281d	1.379117	0.0	discard	resid_lambdas LR x10 0.007→0.07 (+0.011) — conservative LR is intentional for stability
 50c4f76	1.403367	0.0	discard	MPS bfloat16 autocast (+0.035) — MPS float32 is faster AND better; no bf16 tensor core benefit on Apple Silicon
+ab5683a	1.630789	0.0	discard	No RoPE catastrophic (+0.263) — positional encoding is absolutely essential; causal+window masks alone provide no position information

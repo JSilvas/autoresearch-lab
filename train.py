@@ -61,6 +61,7 @@ class GPTConfig:
     short_window_frac: int = 2   # S window = seq_len // short_window_frac
     short_window_frac_2: int = 0  # 2nd S window frac (0 = same as frac_1)
     mixed_head_windows: bool = False  # if True, head 0 gets frac_1 window, head 1 gets frac_2 window in all S layers
+    use_alibi: bool = False  # if True, replace RoPE with ALiBi positional slope bias
 
 
 def norm(x):
@@ -88,6 +89,7 @@ class CausalSelfAttention(nn.Module):
         self.n_kv_head = config.n_kv_head
         self.n_embd = config.n_embd
         self.head_dim = self.n_embd // self.n_head
+        self.use_alibi = config.use_alibi
         assert self.n_embd % self.n_head == 0
         assert self.n_kv_head <= self.n_head and self.n_head % self.n_kv_head == 0
         self.c_q = nn.Linear(self.n_embd, self.n_head * self.head_dim, bias=False)
@@ -96,6 +98,10 @@ class CausalSelfAttention(nn.Module):
         self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=False)
         self.ve_gate_channels = 64
         self.ve_gate = nn.Linear(self.ve_gate_channels, self.n_kv_head, bias=False) if has_ve(layer_idx, config.n_layer) else None
+        if config.use_alibi:
+            # ALiBi slopes: 2^(-8h/n_head) for h=1..n_head
+            slopes = torch.pow(2, -8 * torch.arange(1, config.n_head + 1, dtype=torch.float32) / config.n_head)
+            self.register_buffer("alibi_slopes", slopes)
 
     def forward(self, x, ve, cos_sin, window_size):
         B, T, C = x.size()
@@ -109,23 +115,38 @@ class CausalSelfAttention(nn.Module):
             gate = 2 * torch.sigmoid(self.ve_gate(x[..., :self.ve_gate_channels]))
             v = v + gate.unsqueeze(-1) * ve
 
-        # No rotary positional encoding — position is implicitly encoded via causal+window masks
-        q, k = norm(q), norm(k)
+        if self.use_alibi:
+            q, k = norm(q), norm(k)
+        else:
+            cos, sin = cos_sin
+            q, k = apply_rotary_emb(q, cos, sin), apply_rotary_emb(k, cos, sin)
+            q, k = norm(q), norm(k)
 
         # PyTorch SDPA without FlashAttention 3
         # Expand heads for KV based on GQA
         k = k.repeat_interleave(self.n_head // self.n_kv_head, dim=2)
         v = v.repeat_interleave(self.n_head // self.n_kv_head, dim=2)
-        
+
         # Transpose to [B, H, T, D]
         q = q.transpose(1, 2)
         k = k.transpose(1, 2)
         v = v.transpose(1, 2)
-        
+
         # Apply mask for sliding window
         # window_size = (w_all, w_h1): if w_h1 > 0, head 0 gets w_all and head 1 gets w_h1
         w_all, w_h1 = window_size[0], window_size[1]
-        if w_h1 > 0:
+        if self.use_alibi:
+            # ALiBi: float mask = causal + window constraint + slope*distance bias
+            pos = torch.arange(T, device=q.device, dtype=torch.float32)
+            dist = (pos.unsqueeze(0) - pos.unsqueeze(1)).clamp(min=0)  # [T, T], dist[i,j] = max(0,i-j)
+            causal_bool = torch.ones(T, T, device=q.device, dtype=torch.bool).tril()
+            if w_all > 0 and w_all < T:
+                causal_bool = causal_bool & causal_bool.triu(-(w_all - 1))
+            float_mask = causal_bool.float().log()  # 0 or -inf [T, T]
+            alibi = -self.alibi_slopes.view(-1, 1, 1) * dist.unsqueeze(0)  # [n_head, T, T]
+            mask = float_mask.unsqueeze(0) + alibi  # [n_head, T, T]
+            y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask.unsqueeze(0))
+        elif w_h1 > 0:
             # Per-head windows: build 4D mask [1, H, T, T]
             base = torch.ones(T, T, dtype=torch.bool, device=q.device).tril()
             m0 = base.triu(diagonal=1 - w_all) if (w_all > 0 and w_all < T) else base
@@ -519,6 +540,7 @@ WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
 SHORT_WINDOW_FRAC = 64  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 32
 SHORT_WINDOW_FRAC_2 = 16  # divisor for 2nd short window: S2=seq_len//FRAC_2 = 128
 MIXED_HEAD_WINDOWS = False  # if True: head 0 gets S1=32, head 1 gets S2=128 within each S layer
+USE_ALIBI = True            # if True: replace RoPE with ALiBi additive slope bias (uses global window for all S layers)
 
 # Optimization
 TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
@@ -576,6 +598,7 @@ def build_model_config(depth):
         short_window_frac=SHORT_WINDOW_FRAC,
         short_window_frac_2=SHORT_WINDOW_FRAC_2,
         mixed_head_windows=MIXED_HEAD_WINDOWS,
+        use_alibi=USE_ALIBI,
     )
 
 config = build_model_config(DEPTH)
