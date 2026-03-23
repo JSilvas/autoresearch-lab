@@ -461,9 +461,20 @@ class GPT(nn.Module):
         x = norm(x)
         x0 = x
         for i, block in enumerate(self.transformer.h):
-            x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
-            ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
-            x = block(x, ve, cos_sin, self.window_sizes[i])
+            x_in = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
+            if (
+                self.training
+                and STOCHASTIC_DEPTH_RATE > 0
+                and torch.rand(1).item() < STOCHASTIC_DEPTH_RATE
+            ):
+                x = x_in
+            else:
+                ve = (
+                    self.value_embeds[str(i)](idx)
+                    if str(i) in self.value_embeds
+                    else None
+                )
+                x = block(x_in, ve, cos_sin, self.window_sizes[i])
         x = norm(x)
 
         logits = self.lm_head(x)
@@ -713,6 +724,7 @@ FINAL_LR_FRAC = 0.08  # final LR as fraction of initial
 
 # Model size
 DEPTH = 3  # number of transformer layers
+STOCHASTIC_DEPTH_RATE = 0.10  # per-block drop prob during training (0 = disabled)
 DEVICE_BATCH_SIZE = 16  # per-device batch size (reduce if OOM)
 
 # ---------------------------------------------------------------------------
