@@ -462,19 +462,15 @@ class GPT(nn.Module):
         x0 = x
         for i, block in enumerate(self.transformer.h):
             x_in = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
-            if (
-                self.training
-                and STOCHASTIC_DEPTH_RATE > 0
-                and torch.rand(1).item() < STOCHASTIC_DEPTH_RATE
-            ):
-                x = x_in
-            else:
-                ve = (
-                    self.value_embeds[str(i)](idx)
-                    if str(i) in self.value_embeds
-                    else None
+            ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
+            block_out = block(x_in, ve, cos_sin, self.window_sizes[i])
+            if self.training and STOCHASTIC_DEPTH_RATE > 0:
+                mask = torch.bernoulli(
+                    torch.tensor(1.0 - STOCHASTIC_DEPTH_RATE, device=x.device)
                 )
-                x = block(x_in, ve, cos_sin, self.window_sizes[i])
+                x = x_in + mask * (block_out - x_in)
+            else:
+                x = block_out
         x = norm(x)
 
         logits = self.lm_head(x)
