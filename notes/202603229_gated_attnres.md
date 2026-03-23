@@ -5,3 +5,6 @@
 **Code Change**: Add self.attn_res_queries [n_layer, n_embd] (zero init), self.attn_res_gate [n_layer] scalar (zero init). Forward: keep baseline mixing, compute x_attn, blend: x = x_base + gate * (x_attn - x_base). Add both to optimizer at SCALAR_LR.
 
 ---
+**Result**: 1.450376 (387 steps; Δ+0.068 vs baseline)
+**Git Hash**: 354d5b1
+**Verdict**: DISCARD — Gated AttnRes with zero gate and small learned corrections did not help; worse than baseline. The model apparently does not benefit from adding a content-dependent cross-layer term to the residual stream at this scale and time budget. This confirms that the baseline's fixed resid/x0 scalars are already near-optimal for depth=3 with the given window pattern and learning rates.

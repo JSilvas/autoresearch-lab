@@ -241,8 +241,6 @@ class GPT(nn.Module):
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
-        self.attn_res_queries = nn.Parameter(torch.zeros(config.n_layer, config.n_embd))
-        self.attn_res_gate = nn.Parameter(torch.zeros(config.n_layer))
         # Value embeddings
         head_dim = config.n_embd // config.n_head
         kv_dim = config.n_kv_head * head_dim
@@ -383,7 +381,6 @@ class GPT(nn.Module):
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        attn_res_params = [self.attn_res_queries, self.attn_res_gate]
         assert len(list(self.parameters())) == (
             len(matrix_params)
             + len(embedding_params)
@@ -391,7 +388,6 @@ class GPT(nn.Module):
             + len(value_embeds_params)
             + len(resid_params)
             + len(x0_params)
-            + len(attn_res_params)
         )
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
@@ -437,14 +433,6 @@ class GPT(nn.Module):
                 eps=1e-10,
                 weight_decay=0.0,
             ),
-            dict(
-                kind="adamw",
-                params=attn_res_params,
-                lr=scalar_lr,
-                betas=adam_betas,
-                eps=1e-10,
-                weight_decay=0.0,
-            ),
         ]
         for shape in sorted({p.shape for p in matrix_params}):
             group_params = [p for p in matrix_params if p.shape == shape]
@@ -472,22 +460,10 @@ class GPT(nn.Module):
         x = self.transformer.wte(idx)
         x = norm(x)
         x0 = x
-        layer_states = [x0]
         for i, block in enumerate(self.transformer.h):
-            x_base = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
-            stacked = torch.stack(layer_states, dim=0)
-            x_attn = (
-                (norm(stacked) * self.attn_res_queries[i])
-                .sum(-1)
-                .softmax(0)
-                .unsqueeze(-1)
-                .mul(stacked)
-                .sum(0)
-            )
-            x_in = x_base + self.attn_res_gate[i] * (x_attn - x_base)
+            x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
-            x = block(x_in, ve, cos_sin, self.window_sizes[i])
-            layer_states.append(x)
+            x = block(x, ve, cos_sin, self.window_sizes[i])
         x = norm(x)
 
         logits = self.lm_head(x)
@@ -727,7 +703,7 @@ USE_ALIBI = False  # if True: replace RoPE with ALiBi additive slope bias (uses 
 TOTAL_BATCH_SIZE = 2**15  # ~32K tokens per optimizer step
 EMBEDDING_LR = 0.7  # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
-MATRIX_LR = 0.075  # learning rate for matrix parameters (Muon)
+MATRIX_LR = 0.080  # learning rate for matrix parameters (Muon)
 SCALAR_LR = 0.7  # learning rate for per-layer scalars (Adam)
 WEIGHT_DECAY = 0.15  # cautious weight decay for Muon
 ADAM_BETAS = (0.75, 0.95)  # Adam beta1, beta2
@@ -848,10 +824,7 @@ def get_lr_multiplier(progress):
 
 
 def get_muon_momentum(step):
-    # Muon momentum warm ramp: 0.70 -> 0.80 over training (approximated by step / 400)
-    total_estimated_steps = 400  # based on typical baseline run (~376 steps)
-    progress = min(step / total_estimated_steps, 1.0)
-    return 0.70 + 0.10 * progress
+    return 0.80  # constant, no ramp
 
 
 def get_weight_decay(progress):
