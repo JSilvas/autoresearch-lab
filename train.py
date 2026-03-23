@@ -848,7 +848,10 @@ def get_lr_multiplier(progress):
 
 
 def get_muon_momentum(step):
-    return 0.80  # constant, no ramp
+    # Muon momentum warm ramp: 0.70 -> 0.80 over training (approximated by step / 400)
+    total_estimated_steps = 400  # based on typical baseline run (~376 steps)
+    progress = min(step / total_estimated_steps, 1.0)
+    return 0.70 + 0.10 * progress
 
 
 def get_weight_decay(progress):
