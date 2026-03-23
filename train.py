@@ -10,6 +10,7 @@ os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 
 import gc
+import math
 import time
 from dataclasses import dataclass, asdict
 
@@ -816,11 +817,10 @@ print(f"Gradient accumulation steps: {grad_accum_steps}")
 def get_lr_multiplier(progress):
     if progress < WARMUP_RATIO:
         return progress / WARMUP_RATIO if WARMUP_RATIO > 0 else 1.0
-    elif progress < 1.0 - WARMDOWN_RATIO:
-        return 1.0
-    else:
-        cooldown = (1.0 - progress) / WARMDOWN_RATIO
-        return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
+    adjusted = (progress - WARMUP_RATIO) / max(1.0 - WARMUP_RATIO, 1e-8)
+    cycle_pos = (adjusted * 2.0) % 1.0
+    lrm = 0.5 * (1.0 + math.cos(math.pi * cycle_pos))
+    return max(lrm, FINAL_LR_FRAC)
 
 
 def get_muon_momentum(step):
