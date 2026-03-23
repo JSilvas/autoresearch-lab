@@ -7,3 +7,4 @@ a4f954d	1.463408	0.0	discard	DEPTH=4 AR=48 HD=64 SSLL — +0.082 worse; fewer st
 af931d3	1.413364	0.0	discard	Two-cycle cosine LR (SGDR) — +0.032 worse; flat-top plateau in baseline does real exploration work; cosine always declining from step 0 hurts
 413a0fc	0.000000	0.0	crash	Stochastic depth (naive skip): grad=None crash in Muon
 f585acd	1.419540	0.0	discard	Stochastic depth (tensor Bernoulli mask) — +0.038 worse; depth=3 too shallow to benefit from layer drop
+5b32590	1.397587	0.0	discard	ReLU3 (relu(x).pow(3)) — +0.016 worse; quadratic ReLU2 has better inductive bias at this scale
