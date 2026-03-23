@@ -239,8 +239,8 @@ class GPT(nn.Module):
             }
         )
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
-        self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
+        # AttnRes: per-layer query vectors for content-dependent cross-layer mixing
+        self.attn_res_queries = nn.Parameter(torch.zeros(config.n_layer, config.n_embd))
         # Value embeddings
         head_dim = config.n_embd // config.n_head
         kv_dim = config.n_kv_head * head_dim
@@ -272,9 +272,7 @@ class GPT(nn.Module):
             torch.nn.init.zeros_(block.attn.c_proj.weight)
             torch.nn.init.uniform_(block.mlp.c_fc.weight, -s, s)
             torch.nn.init.zeros_(block.mlp.c_proj.weight)
-        # Per-layer scalars
-        self.resid_lambdas.fill_(1.0)
-        self.x0_lambdas.fill_(0.1)
+        torch.nn.init.zeros_(self.attn_res_queries)
         # Value embeddings
         for ve in self.value_embeds.values():
             torch.nn.init.uniform_(ve.weight, -s, s)
@@ -336,8 +334,7 @@ class GPT(nn.Module):
         nparams_exclude = (
             self.transformer.wte.weight.numel()
             + value_embeds_numel
-            + self.resid_lambdas.numel()
-            + self.x0_lambdas.numel()
+            + self.attn_res_queries.numel()
         )
         h = self.config.n_head
         q = self.config.n_embd // self.config.n_head
@@ -354,7 +351,7 @@ class GPT(nn.Module):
         value_embeds = sum(p.numel() for p in self.value_embeds.parameters())
         lm_head = sum(p.numel() for p in self.lm_head.parameters())
         transformer_matrices = sum(p.numel() for p in self.transformer.h.parameters())
-        scalars = self.resid_lambdas.numel() + self.x0_lambdas.numel()
+        scalars = self.attn_res_queries.numel()
         total = wte + value_embeds + lm_head + transformer_matrices + scalars
         return {
             "wte": wte,
@@ -379,15 +376,13 @@ class GPT(nn.Module):
         value_embeds_params = list(self.value_embeds.parameters())
         embedding_params = list(self.transformer.wte.parameters())
         lm_head_params = list(self.lm_head.parameters())
-        resid_params = [self.resid_lambdas]
-        x0_params = [self.x0_lambdas]
+        attn_res_params = [self.attn_res_queries]
         assert len(list(self.parameters())) == (
             len(matrix_params)
             + len(embedding_params)
             + len(lm_head_params)
             + len(value_embeds_params)
-            + len(resid_params)
-            + len(x0_params)
+            + len(attn_res_params)
         )
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
@@ -419,17 +414,9 @@ class GPT(nn.Module):
             ),
             dict(
                 kind="adamw",
-                params=resid_params,
-                lr=scalar_lr * 0.01,
-                betas=adam_betas,
-                eps=1e-10,
-                weight_decay=0.0,
-            ),
-            dict(
-                kind="adamw",
-                params=x0_params,
+                params=attn_res_params,
                 lr=scalar_lr,
-                betas=(0.96, 0.95),
+                betas=adam_betas,
                 eps=1e-10,
                 weight_decay=0.0,
             ),
@@ -459,11 +446,14 @@ class GPT(nn.Module):
 
         x = self.transformer.wte(idx)
         x = norm(x)
-        x0 = x
+        layer_states = [x]
         for i, block in enumerate(self.transformer.h):
-            x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
+            stacked = torch.stack(layer_states, dim=0)
+            logits = (norm(stacked) * self.attn_res_queries[i]).sum(-1)
+            x = (logits.softmax(0).unsqueeze(-1) * stacked).sum(0)
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
             x = block(x, ve, cos_sin, self.window_sizes[i])
+            layer_states.append(x)
         x = norm(x)
 
         logits = self.lm_head(x)

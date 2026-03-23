@@ -1,2 +1,3 @@
 commit	val_bpb	memory_gb	status	description
 aefbede	1.643088	0.0	discard	ALiBi replaces RoPE — catastrophic (+0.275); fixed slopes + hard window boundary fight each other
+edb3cd2	1.381845	0.0	keep	mar22 baseline: RoPE restored; S=32+S=128 multi-scale SSL; best-known config from mar17
