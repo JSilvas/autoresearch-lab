@@ -1,1 +1,2 @@
 commit	val_bpb	memory_gb	status	description
+aefbede	1.643088	0.0	discard	ALiBi replaces RoPE — catastrophic (+0.275); fixed slopes + hard window boundary fight each other

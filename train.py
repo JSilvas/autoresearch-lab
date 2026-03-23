@@ -5,6 +5,7 @@ Usage: uv run train.py
 """
 
 import os
+
 os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
 os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
 
@@ -18,28 +19,47 @@ import sys
 _log_path = os.path.join(os.path.dirname(__file__) or ".", "run.log")
 _log_file = open(_log_path, "wb", buffering=0)
 
+
 class _Tee:
-    def __init__(self, stream, log): self._s, self._l = stream, log
+    def __init__(self, stream, log):
+        self._s, self._l = stream, log
+
     def write(self, b):
         n = self._s.write(b)
         self._l.write(b.encode() if isinstance(b, str) else b)
         return n
-    def flush(self): self._s.flush(); self._l.flush()
-    def fileno(self): return self._s.fileno()
-    def __getattr__(self, a): return getattr(self._s, a)
+
+    def flush(self):
+        self._s.flush()
+        self._l.flush()
+
+    def fileno(self):
+        return self._s.fileno()
+
+    def __getattr__(self, a):
+        return getattr(self._s, a)
+
 
 sys.stdout = _Tee(sys.stdout, _log_file)
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 def verify_macos_env():
     if sys.platform != "darwin":
-        raise RuntimeError(f"This script requires macOS with Metal. Detected platform: {sys.platform}")
+        raise RuntimeError(
+            f"This script requires macOS with Metal. Detected platform: {sys.platform}"
+        )
     if not torch.backends.mps.is_available():
-        raise RuntimeError("MPS (Metal Performance Shaders) is not available. Ensure you are running on Apple Silicon with a compatible PyTorch build.")
-    print("Environment verified: macOS detected with Metal (MPS) hardware acceleration available.")
+        raise RuntimeError(
+            "MPS (Metal Performance Shaders) is not available. Ensure you are running on Apple Silicon with a compatible PyTorch build."
+        )
+    print(
+        "Environment verified: macOS detected with Metal (MPS) hardware acceleration available."
+    )
     print()
+
 
 verify_macos_env()
 
@@ -48,6 +68,7 @@ from prepare import MAX_SEQ_LEN, TIME_BUDGET, Tokenizer, make_dataloader, evalua
 # ---------------------------------------------------------------------------
 # GPT Model
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class GPTConfig:
@@ -58,7 +79,7 @@ class GPTConfig:
     n_kv_head: int = 6
     n_embd: int = 768
     window_pattern: str = "SSSL"
-    short_window_frac: int = 2   # S window = seq_len // short_window_frac
+    short_window_frac: int = 2  # S window = seq_len // short_window_frac
     short_window_frac_2: int = 0  # 2nd S window frac (0 = same as frac_1)
     mixed_head_windows: bool = False  # if True, head 0 gets frac_1 window, head 1 gets frac_2 window in all S layers
     use_alibi: bool = False  # if True, replace RoPE with ALiBi positional slope bias
@@ -97,10 +118,19 @@ class CausalSelfAttention(nn.Module):
         self.c_v = nn.Linear(self.n_embd, self.n_kv_head * self.head_dim, bias=False)
         self.c_proj = nn.Linear(self.n_embd, self.n_embd, bias=False)
         self.ve_gate_channels = 64
-        self.ve_gate = nn.Linear(self.ve_gate_channels, self.n_kv_head, bias=False) if has_ve(layer_idx, config.n_layer) else None
+        self.ve_gate = (
+            nn.Linear(self.ve_gate_channels, self.n_kv_head, bias=False)
+            if has_ve(layer_idx, config.n_layer)
+            else None
+        )
         if config.use_alibi:
             # ALiBi slopes: 2^(-8h/n_head) for h=1..n_head
-            slopes = torch.pow(2, -8 * torch.arange(1, config.n_head + 1, dtype=torch.float32) / config.n_head)
+            slopes = torch.pow(
+                2,
+                -8
+                * torch.arange(1, config.n_head + 1, dtype=torch.float32)
+                / config.n_head,
+            )
             self.register_buffer("alibi_slopes", slopes)
 
     def forward(self, x, ve, cos_sin, window_size):
@@ -112,7 +142,7 @@ class CausalSelfAttention(nn.Module):
         # Value residual (ResFormer): mix in value embedding with input-dependent gate per head
         if ve is not None:
             ve = ve.view(B, T, self.n_kv_head, self.head_dim)
-            gate = 2 * torch.sigmoid(self.ve_gate(x[..., :self.ve_gate_channels]))
+            gate = 2 * torch.sigmoid(self.ve_gate(x[..., : self.ve_gate_channels]))
             v = v + gate.unsqueeze(-1) * ve
 
         if self.use_alibi:
@@ -138,13 +168,19 @@ class CausalSelfAttention(nn.Module):
         if self.use_alibi:
             # ALiBi: float mask = causal + window constraint + slope*distance bias
             pos = torch.arange(T, device=q.device, dtype=torch.float32)
-            dist = (pos.unsqueeze(0) - pos.unsqueeze(1)).clamp(min=0)  # [T, T], dist[i,j] = max(0,i-j)
+            dist = (pos.unsqueeze(0) - pos.unsqueeze(1)).clamp(
+                min=0
+            )  # [T, T], dist[i,j] = max(0,i-j)
             causal_bool = torch.ones(T, T, device=q.device, dtype=torch.bool).tril()
             if w_all > 0 and w_all < T:
                 causal_bool = causal_bool & causal_bool.triu(-(w_all - 1))
             float_mask = causal_bool.float().log()  # 0 or -inf [T, T]
-            alibi = -self.alibi_slopes.view(-1, 1, 1) * dist.unsqueeze(0)  # [n_head, T, T]
-            mask = (float_mask.unsqueeze(0) + alibi).to(dtype=q.dtype)  # match q dtype for MPS
+            alibi = -self.alibi_slopes.view(-1, 1, 1) * dist.unsqueeze(
+                0
+            )  # [n_head, T, T]
+            mask = (float_mask.unsqueeze(0) + alibi).to(
+                dtype=q.dtype
+            )  # match q dtype for MPS
             y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask.unsqueeze(0))
         elif w_h1 > 0:
             # Per-head windows: build 4D mask [1, H, T, T]
@@ -160,7 +196,7 @@ class CausalSelfAttention(nn.Module):
             y = F.scaled_dot_product_attention(q, k, v, attn_mask=mask)
         else:
             y = F.scaled_dot_product_attention(q, k, v, is_causal=True)
-            
+
         y = y.transpose(1, 2).contiguous().view(B, T, -1)
         y = self.c_proj(y)
         return y
@@ -196,20 +232,25 @@ class GPT(nn.Module):
         super().__init__()
         self.config = config
         self.window_sizes = self._compute_window_sizes(config)
-        self.transformer = nn.ModuleDict({
-            "wte": nn.Embedding(config.vocab_size, config.n_embd),
-            "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
-        })
+        self.transformer = nn.ModuleDict(
+            {
+                "wte": nn.Embedding(config.vocab_size, config.n_embd),
+                "h": nn.ModuleList([Block(config, i) for i in range(config.n_layer)]),
+            }
+        )
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
         # Value embeddings
         head_dim = config.n_embd // config.n_head
         kv_dim = config.n_kv_head * head_dim
-        self.value_embeds = nn.ModuleDict({
-            str(i): nn.Embedding(config.vocab_size, kv_dim)
-            for i in range(config.n_layer) if has_ve(i, config.n_layer)
-        })
+        self.value_embeds = nn.ModuleDict(
+            {
+                str(i): nn.Embedding(config.vocab_size, kv_dim)
+                for i in range(config.n_layer)
+                if has_ve(i, config.n_layer)
+            }
+        )
         # Rotary embeddings
         self.rotary_seq_len = config.sequence_len * 10
         cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
@@ -266,13 +307,17 @@ class GPT(nn.Module):
         pattern = config.window_pattern.upper()
         assert all(c in "SL" for c in pattern)
         long_window = config.sequence_len
-        frac2 = config.short_window_frac_2 if config.short_window_frac_2 else config.short_window_frac
+        frac2 = (
+            config.short_window_frac_2
+            if config.short_window_frac_2
+            else config.short_window_frac
+        )
         short_windows = [long_window // config.short_window_frac, long_window // frac2]
         window_sizes = []
         s_count = 0
         for layer_idx in range(config.n_layer):
             char = pattern[layer_idx % len(pattern)]
-            if char == 'S':
+            if char == "S":
                 if config.mixed_head_windows:
                     # Head 0 gets short_windows[0], head 1 gets short_windows[1]
                     window_sizes.append((short_windows[0], short_windows[1]))
@@ -288,8 +333,12 @@ class GPT(nn.Module):
         """Estimated FLOPs per token (forward + backward)."""
         nparams = sum(p.numel() for p in self.parameters())
         value_embeds_numel = sum(ve.weight.numel() for ve in self.value_embeds.values())
-        nparams_exclude = (self.transformer.wte.weight.numel() + value_embeds_numel +
-                          self.resid_lambdas.numel() + self.x0_lambdas.numel())
+        nparams_exclude = (
+            self.transformer.wte.weight.numel()
+            + value_embeds_numel
+            + self.resid_lambdas.numel()
+            + self.x0_lambdas.numel()
+        )
         h = self.config.n_head
         q = self.config.n_embd // self.config.n_head
         t = self.config.sequence_len
@@ -308,12 +357,23 @@ class GPT(nn.Module):
         scalars = self.resid_lambdas.numel() + self.x0_lambdas.numel()
         total = wte + value_embeds + lm_head + transformer_matrices + scalars
         return {
-            'wte': wte, 'value_embeds': value_embeds, 'lm_head': lm_head,
-            'transformer_matrices': transformer_matrices, 'scalars': scalars, 'total': total,
+            "wte": wte,
+            "value_embeds": value_embeds,
+            "lm_head": lm_head,
+            "transformer_matrices": transformer_matrices,
+            "scalars": scalars,
+            "total": total,
         }
 
-    def setup_optimizer(self, unembedding_lr=0.004, embedding_lr=0.2, matrix_lr=0.02,
-                        weight_decay=0.0, adam_betas=(0.8, 0.95), scalar_lr=0.5):
+    def setup_optimizer(
+        self,
+        unembedding_lr=0.004,
+        embedding_lr=0.2,
+        matrix_lr=0.02,
+        weight_decay=0.0,
+        adam_betas=(0.8, 0.95),
+        scalar_lr=0.5,
+    ):
         model_dim = self.config.n_embd
         matrix_params = list(self.transformer.h.parameters())
         value_embeds_params = list(self.value_embeds.parameters())
@@ -321,30 +381,78 @@ class GPT(nn.Module):
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        assert len(list(self.parameters())) == (len(matrix_params) + len(embedding_params) +
-            len(lm_head_params) + len(value_embeds_params) + len(resid_params) + len(x0_params))
+        assert len(list(self.parameters())) == (
+            len(matrix_params)
+            + len(embedding_params)
+            + len(lm_head_params)
+            + len(value_embeds_params)
+            + len(resid_params)
+            + len(x0_params)
+        )
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
         param_groups = [
-            dict(kind='adamw', params=lm_head_params, lr=unembedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=embedding_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=value_embeds_params, lr=embedding_lr * dmodel_lr_scale, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=resid_params, lr=scalar_lr * 0.01, betas=adam_betas, eps=1e-10, weight_decay=0.0),
-            dict(kind='adamw', params=x0_params, lr=scalar_lr, betas=(0.96, 0.95), eps=1e-10, weight_decay=0.0),
+            dict(
+                kind="adamw",
+                params=lm_head_params,
+                lr=unembedding_lr * dmodel_lr_scale,
+                betas=adam_betas,
+                eps=1e-10,
+                weight_decay=0.0,
+            ),
+            dict(
+                kind="adamw",
+                params=embedding_params,
+                lr=embedding_lr * dmodel_lr_scale,
+                betas=adam_betas,
+                eps=1e-10,
+                weight_decay=0.0,
+            ),
+            dict(
+                kind="adamw",
+                params=value_embeds_params,
+                lr=embedding_lr * dmodel_lr_scale,
+                betas=adam_betas,
+                eps=1e-10,
+                weight_decay=0.0,
+            ),
+            dict(
+                kind="adamw",
+                params=resid_params,
+                lr=scalar_lr * 0.01,
+                betas=adam_betas,
+                eps=1e-10,
+                weight_decay=0.0,
+            ),
+            dict(
+                kind="adamw",
+                params=x0_params,
+                lr=scalar_lr,
+                betas=(0.96, 0.95),
+                eps=1e-10,
+                weight_decay=0.0,
+            ),
         ]
         for shape in sorted({p.shape for p in matrix_params}):
             group_params = [p for p in matrix_params if p.shape == shape]
-            param_groups.append(dict(
-                kind='muon', params=group_params, lr=matrix_lr,
-                momentum=0.95, ns_steps=7, beta2=0.95, weight_decay=weight_decay,
-            ))
+            param_groups.append(
+                dict(
+                    kind="muon",
+                    params=group_params,
+                    lr=matrix_lr,
+                    momentum=0.95,
+                    ns_steps=7,
+                    beta2=0.95,
+                    weight_decay=weight_decay,
+                )
+            )
         optimizer = MuonAdamW(param_groups)
         for group in optimizer.param_groups:
             group["initial_lr"] = group["lr"]
         return optimizer
 
-    def forward(self, idx, targets=None, reduction='mean'):
+    def forward(self, idx, targets=None, reduction="mean"):
         B, T = idx.size()
         assert T <= self.cos.size(1)
         cos_sin = self.cos[:, :T], self.sin[:, :T]
@@ -362,10 +470,15 @@ class GPT(nn.Module):
         logits = logits.float()
 
         if targets is not None:
-            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1),
-                                   ignore_index=-1, reduction=reduction)
+            loss = F.cross_entropy(
+                logits.view(-1, logits.size(-1)),
+                targets.view(-1),
+                ignore_index=-1,
+                reduction=reduction,
+            )
             return loss
         return logits
+
 
 # ---------------------------------------------------------------------------
 # Optimizer (MuonAdamW, single GPU only)
@@ -380,7 +493,9 @@ polar_express_coeffs = [
 ]
 
 
-def adamw_step_fused(p, grad, exp_avg, exp_avg_sq, step_t, lr_t, beta1_t, beta2_t, eps_t, wd_t):
+def adamw_step_fused(
+    p, grad, exp_avg, exp_avg_sq, step_t, lr_t, beta1_t, beta2_t, eps_t, wd_t
+):
     # Move scalars to correct device and dtype
     step_t = step_t.to(device=p.device, dtype=p.dtype)
     lr_t = lr_t.to(device=p.device, dtype=p.dtype)
@@ -388,19 +503,29 @@ def adamw_step_fused(p, grad, exp_avg, exp_avg_sq, step_t, lr_t, beta1_t, beta2_
     beta2_t = beta2_t.to(device=p.device, dtype=p.dtype)
     eps_t = eps_t.to(device=p.device, dtype=p.dtype)
     wd_t = wd_t.to(device=p.device, dtype=p.dtype)
-    
+
     p.mul_(1 - lr_t * wd_t)
     exp_avg.lerp_(grad, 1 - beta1_t)
     exp_avg_sq.lerp_(grad.square(), 1 - beta2_t)
-    bias1 = 1 - beta1_t ** step_t
-    bias2 = 1 - beta2_t ** step_t
+    bias1 = 1 - beta1_t**step_t
+    bias2 = 1 - beta2_t**step_t
     denom = (exp_avg_sq / bias2).sqrt() + eps_t
     step_size = lr_t / bias1
     p.add_(exp_avg / denom, alpha=-step_size)
 
 
-def muon_step_fused(stacked_grads, stacked_params, momentum_buffer, second_momentum_buffer,
-                    momentum_t, lr_t, wd_t, beta2_t, ns_steps, red_dim):
+def muon_step_fused(
+    stacked_grads,
+    stacked_params,
+    momentum_buffer,
+    second_momentum_buffer,
+    momentum_t,
+    lr_t,
+    wd_t,
+    beta2_t,
+    ns_steps,
+    red_dim,
+):
     # Move scalars to correct device and dtype
     momentum_t = momentum_t.to(device=stacked_params.device, dtype=stacked_params.dtype)
     lr_t = lr_t.to(device=stacked_params.device, dtype=stacked_params.dtype)
@@ -431,11 +556,13 @@ def muon_step_fused(stacked_grads, stacked_params, momentum_buffer, second_momen
     red_dim_size = g.size(red_dim)
     v_norm_sq = v_mean.sum(dim=(-2, -1), keepdim=True) * red_dim_size
     v_norm = v_norm_sq.sqrt()
-    
+
     # Needs to match second_momentum_buffer.dtype for lerp_
     beta2_cast = beta2_t.to(second_momentum_buffer.dtype)
-    second_momentum_buffer.lerp_(v_mean.to(dtype=second_momentum_buffer.dtype), 1 - beta2_cast)
-    
+    second_momentum_buffer.lerp_(
+        v_mean.to(dtype=second_momentum_buffer.dtype), 1 - beta2_cast
+    )
+
     step_size = second_momentum_buffer.clamp_min(1e-10).rsqrt()
     scaled_sq_sum = (v_mean * red_dim_size) * step_size.float().square()
     v_norm_new = scaled_sq_sum.sum(dim=(-2, -1), keepdim=True).sqrt()
@@ -464,7 +591,7 @@ class MuonAdamW(torch.optim.Optimizer):
         self._muon_lr_t = torch.tensor(0.0, dtype=torch.float32, device="cpu")
         self._muon_wd_t = torch.tensor(0.0, dtype=torch.float32, device="cpu")
         self._muon_beta2_t = torch.tensor(0.0, dtype=torch.float32, device="cpu")
-        
+
         # Compile conditionally
         compiler_kwargs = {"dynamic": False, "fullgraph": True}
         if device_type in ("cuda", "cpu"):
@@ -475,28 +602,37 @@ class MuonAdamW(torch.optim.Optimizer):
             self.muon_step_fused = muon_step_fused
 
     def _step_adamw(self, group):
-        for p in group['params']:
+        for p in group["params"]:
             if p.grad is None:
                 continue
             grad = p.grad
             state = self.state[p]
             if not state:
-                state['step'] = 0
-                state['exp_avg'] = torch.zeros_like(p)
-                state['exp_avg_sq'] = torch.zeros_like(p)
-            state['step'] += 1
-            self._adamw_step_t.fill_(state['step'])
-            self._adamw_lr_t.fill_(group['lr'])
-            self._adamw_beta1_t.fill_(group['betas'][0])
-            self._adamw_beta2_t.fill_(group['betas'][1])
-            self._adamw_eps_t.fill_(group['eps'])
-            self._adamw_wd_t.fill_(group['weight_decay'])
-            self.adamw_step_fused(p, grad, state['exp_avg'], state['exp_avg_sq'],
-                            self._adamw_step_t, self._adamw_lr_t, self._adamw_beta1_t,
-                            self._adamw_beta2_t, self._adamw_eps_t, self._adamw_wd_t)
+                state["step"] = 0
+                state["exp_avg"] = torch.zeros_like(p)
+                state["exp_avg_sq"] = torch.zeros_like(p)
+            state["step"] += 1
+            self._adamw_step_t.fill_(state["step"])
+            self._adamw_lr_t.fill_(group["lr"])
+            self._adamw_beta1_t.fill_(group["betas"][0])
+            self._adamw_beta2_t.fill_(group["betas"][1])
+            self._adamw_eps_t.fill_(group["eps"])
+            self._adamw_wd_t.fill_(group["weight_decay"])
+            self.adamw_step_fused(
+                p,
+                grad,
+                state["exp_avg"],
+                state["exp_avg_sq"],
+                self._adamw_step_t,
+                self._adamw_lr_t,
+                self._adamw_beta1_t,
+                self._adamw_beta2_t,
+                self._adamw_eps_t,
+                self._adamw_wd_t,
+            )
 
     def _step_muon(self, group):
-        params = group['params']
+        params = group["params"]
         if not params:
             return
         p = params[0]
@@ -504,58 +640,79 @@ class MuonAdamW(torch.optim.Optimizer):
         num_params = len(params)
         shape, device, dtype = p.shape, p.device, p.dtype
         if "momentum_buffer" not in state:
-            state["momentum_buffer"] = torch.zeros(num_params, *shape, dtype=dtype, device=device)
+            state["momentum_buffer"] = torch.zeros(
+                num_params, *shape, dtype=dtype, device=device
+            )
         if "second_momentum_buffer" not in state:
-            state_shape = (num_params, shape[-2], 1) if shape[-2] >= shape[-1] else (num_params, 1, shape[-1])
-            state["second_momentum_buffer"] = torch.zeros(state_shape, dtype=dtype, device=device)
+            state_shape = (
+                (num_params, shape[-2], 1)
+                if shape[-2] >= shape[-1]
+                else (num_params, 1, shape[-1])
+            )
+            state["second_momentum_buffer"] = torch.zeros(
+                state_shape, dtype=dtype, device=device
+            )
         red_dim = -1 if shape[-2] >= shape[-1] else -2
         stacked_grads = torch.stack([p.grad for p in params])
         stacked_params = torch.stack(params)
         self._muon_momentum_t.fill_(group["momentum"])
         self._muon_beta2_t.fill_(group["beta2"] if group["beta2"] is not None else 0.0)
-        self._muon_lr_t.fill_(group["lr"] * max(1.0, shape[-2] / shape[-1])**0.5)
+        self._muon_lr_t.fill_(group["lr"] * max(1.0, shape[-2] / shape[-1]) ** 0.5)
         self._muon_wd_t.fill_(group["weight_decay"])
-        self.muon_step_fused(stacked_grads, stacked_params,
-                        state["momentum_buffer"], state["second_momentum_buffer"],
-                        self._muon_momentum_t, self._muon_lr_t, self._muon_wd_t,
-                        self._muon_beta2_t, group["ns_steps"], red_dim)
+        self.muon_step_fused(
+            stacked_grads,
+            stacked_params,
+            state["momentum_buffer"],
+            state["second_momentum_buffer"],
+            self._muon_momentum_t,
+            self._muon_lr_t,
+            self._muon_wd_t,
+            self._muon_beta2_t,
+            group["ns_steps"],
+            red_dim,
+        )
         torch._foreach_copy_(params, list(stacked_params.unbind(0)))
 
     @torch.no_grad()
     def step(self):
         for group in self.param_groups:
-            if group['kind'] == 'adamw':
+            if group["kind"] == "adamw":
                 self._step_adamw(group)
-            elif group['kind'] == 'muon':
+            elif group["kind"] == "muon":
                 self._step_muon(group)
+
 
 # ---------------------------------------------------------------------------
 # Hyperparameters (edit these directly, no CLI flags needed)
 # ---------------------------------------------------------------------------
 
 # Model architecture
-ASPECT_RATIO = 64       # model_dim = depth * ASPECT_RATIO
-HEAD_DIM = 128          # target head dimension for attention
+ASPECT_RATIO = 64  # model_dim = depth * ASPECT_RATIO
+HEAD_DIM = 128  # target head dimension for attention
 WINDOW_PATTERN = "SSL"  # sliding window pattern: L=full, S=short context
-SHORT_WINDOW_FRAC = 64  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 32
+SHORT_WINDOW_FRAC = (
+    64  # divisor for 1st short window: S1=seq_len//SHORT_WINDOW_FRAC = 32
+)
 SHORT_WINDOW_FRAC_2 = 16  # divisor for 2nd short window: S2=seq_len//FRAC_2 = 128
-MIXED_HEAD_WINDOWS = False  # if True: head 0 gets S1=32, head 1 gets S2=128 within each S layer
-USE_ALIBI = True            # if True: replace RoPE with ALiBi additive slope bias (uses global window for all S layers)
+MIXED_HEAD_WINDOWS = (
+    False  # if True: head 0 gets S1=32, head 1 gets S2=128 within each S layer
+)
+USE_ALIBI = False  # if True: replace RoPE with ALiBi additive slope bias (uses global window for all S layers)
 
 # Optimization
-TOTAL_BATCH_SIZE = 2**15 # ~32K tokens per optimizer step
-EMBEDDING_LR = 0.7      # learning rate for token embeddings (Adam)
+TOTAL_BATCH_SIZE = 2**15  # ~32K tokens per optimizer step
+EMBEDDING_LR = 0.7  # learning rate for token embeddings (Adam)
 UNEMBEDDING_LR = 0.004  # learning rate for lm_head (Adam)
-MATRIX_LR = 0.080       # learning rate for matrix parameters (Muon)
-SCALAR_LR = 0.7         # learning rate for per-layer scalars (Adam)
-WEIGHT_DECAY = 0.15     # cautious weight decay for Muon
-ADAM_BETAS = (0.75, 0.95) # Adam beta1, beta2
-WARMUP_RATIO = 0.0      # fraction of time budget for LR warmup
-WARMDOWN_RATIO = 0.60   # fraction of time budget for LR warmdown
-FINAL_LR_FRAC = 0.08    # final LR as fraction of initial
+MATRIX_LR = 0.080  # learning rate for matrix parameters (Muon)
+SCALAR_LR = 0.7  # learning rate for per-layer scalars (Adam)
+WEIGHT_DECAY = 0.15  # cautious weight decay for Muon
+ADAM_BETAS = (0.75, 0.95)  # Adam beta1, beta2
+WARMUP_RATIO = 0.0  # fraction of time budget for LR warmup
+WARMDOWN_RATIO = 0.60  # fraction of time budget for LR warmdown
+FINAL_LR_FRAC = 0.08  # final LR as fraction of initial
 
 # Model size
-DEPTH = 3               # number of transformer layers
+DEPTH = 3  # number of transformer layers
 DEVICE_BATCH_SIZE = 16  # per-device batch size (reduce if OOM)
 
 # ---------------------------------------------------------------------------
@@ -569,7 +726,13 @@ if torch.cuda.is_available():
 torch.set_float32_matmul_precision("high")
 
 # Detect device
-device_type = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
+device_type = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
 device = torch.device(device_type)
 
 # Autocast context
@@ -579,6 +742,7 @@ elif device_type == "cpu":
     autocast_ctx = torch.amp.autocast(device_type="cpu", dtype=torch.bfloat16)
 else:
     import contextlib
+
     autocast_ctx = contextlib.nullcontext()
 
 H100_BF16_PEAK_FLOPS = 989.5e12
@@ -587,19 +751,25 @@ tokenizer = Tokenizer.from_directory()
 vocab_size = tokenizer.get_vocab_size()
 print(f"Vocab size: {vocab_size:,}")
 
+
 def build_model_config(depth):
     base_dim = depth * ASPECT_RATIO
     model_dim = ((base_dim + HEAD_DIM - 1) // HEAD_DIM) * HEAD_DIM
     num_heads = model_dim // HEAD_DIM
     return GPTConfig(
-        sequence_len=MAX_SEQ_LEN, vocab_size=vocab_size,
-        n_layer=depth, n_head=num_heads, n_kv_head=num_heads, n_embd=model_dim,
+        sequence_len=MAX_SEQ_LEN,
+        vocab_size=vocab_size,
+        n_layer=depth,
+        n_head=num_heads,
+        n_kv_head=num_heads,
+        n_embd=model_dim,
         window_pattern=WINDOW_PATTERN,
         short_window_frac=SHORT_WINDOW_FRAC,
         short_window_frac_2=SHORT_WINDOW_FRAC_2,
         mixed_head_windows=MIXED_HEAD_WINDOWS,
         use_alibi=USE_ALIBI,
     )
+
 
 config = build_model_config(DEPTH)
 print(f"Model config: {asdict(config)}")
@@ -613,7 +783,7 @@ param_counts = model.num_scaling_params()
 print("Parameter counts:")
 for key, value in param_counts.items():
     print(f"  {key:24s}: {value:,}")
-num_params = param_counts['total']
+num_params = param_counts["total"]
 num_flops_per_token = model.estimate_flops()
 print(f"Estimated FLOPs per token: {num_flops_per_token:e}")
 
@@ -642,6 +812,7 @@ print(f"Gradient accumulation steps: {grad_accum_steps}")
 
 # Schedules (all based on progress = training_time / TIME_BUDGET)
 
+
 def get_lr_multiplier(progress):
     if progress < WARMUP_RATIO:
         return progress / WARMUP_RATIO if WARMUP_RATIO > 0 else 1.0
@@ -651,11 +822,14 @@ def get_lr_multiplier(progress):
         cooldown = (1.0 - progress) / WARMDOWN_RATIO
         return cooldown * 1.0 + (1 - cooldown) * FINAL_LR_FRAC
 
+
 def get_muon_momentum(step):
     return 0.80  # constant, no ramp
 
+
 def get_weight_decay(progress):
     return WEIGHT_DECAY * (1 - progress)
+
 
 # ---------------------------------------------------------------------------
 # Training loop
@@ -666,11 +840,13 @@ smooth_train_loss = 0
 total_training_time = 0
 step = 0
 
+
 def sync_device(device_type):
     if device_type == "cuda":
         torch.cuda.synchronize()
     elif device_type == "mps":
         torch.mps.synchronize()
+
 
 while True:
     sync_device(device_type)
@@ -690,7 +866,7 @@ while True:
     muon_weight_decay = get_weight_decay(progress)
     for group in optimizer.param_groups:
         group["lr"] = group["initial_lr"] * lrm
-        if group['kind'] == 'muon':
+        if group["kind"] == "muon":
             group["momentum"] = muon_momentum
             group["weight_decay"] = muon_weight_decay
     optimizer.step()
@@ -713,13 +889,17 @@ while True:
     # Logging
     ema_beta = 0.9
     smooth_train_loss = ema_beta * smooth_train_loss + (1 - ema_beta) * train_loss_f
-    debiased_smooth_loss = smooth_train_loss / (1 - ema_beta**(step + 1))
+    debiased_smooth_loss = smooth_train_loss / (1 - ema_beta ** (step + 1))
     pct_done = 100 * progress
     tok_per_sec = int(TOTAL_BATCH_SIZE / dt)
     mfu = 100 * num_flops_per_token * TOTAL_BATCH_SIZE / dt / H100_BF16_PEAK_FLOPS
     remaining = max(0, TIME_BUDGET - total_training_time)
 
-    print(f"\rstep {step:05d} ({pct_done:.1f}%) | loss: {debiased_smooth_loss:.6f} | lrm: {lrm:.2f} | dt: {dt*1000:.0f}ms | tok/sec: {tok_per_sec:,} | mfu: {mfu:.1f}% | epoch: {epoch} | remaining: {remaining:.0f}s    ", end="", flush=True)
+    print(
+        f"\rstep {step:05d} ({pct_done:.1f}%) | loss: {debiased_smooth_loss:.6f} | lrm: {lrm:.2f} | dt: {dt * 1000:.0f}ms | tok/sec: {tok_per_sec:,} | mfu: {mfu:.1f}% | epoch: {epoch} | remaining: {remaining:.0f}s    ",
+        end="",
+        flush=True,
+    )
 
     # GC management (Python's GC causes ~500ms stalls)
     if step == 0:
@@ -747,7 +927,16 @@ with autocast_ctx:
 # Final summary
 t_end = time.time()
 startup_time = t_start_training - t_start
-steady_state_mfu = 100 * num_flops_per_token * TOTAL_BATCH_SIZE * (step - 10) / total_training_time / H100_BF16_PEAK_FLOPS if total_training_time > 0 else 0
+steady_state_mfu = (
+    100
+    * num_flops_per_token
+    * TOTAL_BATCH_SIZE
+    * (step - 10)
+    / total_training_time
+    / H100_BF16_PEAK_FLOPS
+    if total_training_time > 0
+    else 0
+)
 if device_type == "cuda":
     peak_vram_mb = torch.cuda.max_memory_allocated() / 1024 / 1024
 else:
