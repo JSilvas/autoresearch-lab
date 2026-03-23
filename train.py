@@ -239,7 +239,6 @@ class GPT(nn.Module):
             }
         )
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
-        self.lm_head.weight = self.transformer.wte.weight
         self.resid_lambdas = nn.Parameter(torch.ones(config.n_layer))
         self.x0_lambdas = nn.Parameter(torch.zeros(config.n_layer))
         # Value embeddings
@@ -287,7 +286,8 @@ class GPT(nn.Module):
         head_dim = self.config.n_embd // self.config.n_head
         cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
         self.cos, self.sin = cos, sin
-        self.lm_head.weight = self.transformer.wte.weight
+        # Cast embeddings to bf16
+        self.transformer.wte.to(dtype=torch.bfloat16)
         for ve in self.value_embeds.values():
             ve.to(dtype=torch.bfloat16)
 
@@ -378,12 +378,13 @@ class GPT(nn.Module):
         matrix_params = list(self.transformer.h.parameters())
         value_embeds_params = list(self.value_embeds.parameters())
         embedding_params = list(self.transformer.wte.parameters())
-        lm_head_params = []
+        lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
         assert len(list(self.parameters())) == (
             len(matrix_params)
             + len(embedding_params)
+            + len(lm_head_params)
             + len(value_embeds_params)
             + len(resid_params)
             + len(x0_params)

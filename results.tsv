@@ -2,3 +2,4 @@ commit	val_bpb	memory_gb	status	description
 aefbede	1.643088	0.0	discard	ALiBi replaces RoPE — catastrophic (+0.275); fixed slopes + hard window boundary fight each other
 edb3cd2	1.381845	0.0	keep	mar22 baseline: RoPE restored; S=32+S=128 multi-scale SSL; best-known config from mar17
 a6a25ba	1.426980	0.0	discard	AttnRes cross-layer attention replaces resid/x0 lambdas — +0.045 worse; zero-init uniform mixing far from optimal; scale mismatch
+b1475c7	0.000000	0.0	crash	Weight tying lm_head=wte: loss explosion (LR conflict — EMBEDDING_LR 0.7 vs UNEMBEDDING_LR 0.004 are incompatible for shared weight)
