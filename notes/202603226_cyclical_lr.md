@@ -5,3 +5,6 @@
 **Code Change**: `import math`; `get_lr_multiplier` uses two-cycle cosine: `lrm = max(0.5*(1+cos(π*(adjusted*2%1))), FINAL_LR_FRAC)`. WARMDOWN_RATIO and the flat-top phase are removed (cosine handles entire schedule).
 
 ---
+**Result**: 1.413364 (376 steps; Δ+0.032 vs baseline)
+**Git Hash**: af931d3
+**Verdict**: DISCARD — Worse than linear warmdown. The two cosine cycles remove the flat-top LR plateau (40% of training at peak LR in the baseline). That plateau is doing real exploration work. The cosine shape hurts because LR starts declining immediately from step 0, giving less time at peak. The warm-restart at 50% doesn't compensate — the model just gets destabilized and needs to re-converge. Confirms: our linear warmdown (flat top → linear decay) is better than any cosine variant.
