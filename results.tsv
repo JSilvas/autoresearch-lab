@@ -5,3 +5,5 @@ a6a25ba	1.426980	0.0	discard	AttnRes cross-layer attention replaces resid/x0 lam
 b1475c7	0.000000	0.0	crash	Weight tying lm_head=wte: loss explosion (LR conflict — EMBEDDING_LR 0.7 vs UNEMBEDDING_LR 0.004 are incompatible for shared weight)
 a4f954d	1.463408	0.0	discard	DEPTH=4 AR=48 HD=64 SSLL — +0.082 worse; fewer steps (327 vs 376) + less capacity (7.8M vs 10.4M)
 af931d3	1.413364	0.0	discard	Two-cycle cosine LR (SGDR) — +0.032 worse; flat-top plateau in baseline does real exploration work; cosine always declining from step 0 hurts
+413a0fc	0.000000	0.0	crash	Stochastic depth (naive skip): grad=None crash in Muon
+f585acd	1.419540	0.0	discard	Stochastic depth (tensor Bernoulli mask) — +0.038 worse; depth=3 too shallow to benefit from layer drop
