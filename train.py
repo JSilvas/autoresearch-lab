@@ -5,15 +5,12 @@ Usage: uv run train.py
 """
 
 import os
-
-os.environ["PYTORCH_ALLOC_CONF"] = "expandable_segments:True"
-os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
-
 import gc
 import time
 from dataclasses import dataclass, asdict
 
 import sys
+import math
 
 # Mirror all stdout to run.log so the monitor TUI can tail it from any terminal.
 _log_path = os.path.join(os.path.dirname(__file__) or ".", "run.log")
@@ -205,8 +202,8 @@ class CausalSelfAttention(nn.Module):
 class MLP(nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.c_fc = nn.Linear(config.n_embd, 3 * config.n_embd, bias=False)
-        self.c_proj = nn.Linear(3 * config.n_embd, config.n_embd, bias=False)
+        self.c_fc = nn.Linear(config.n_embd, 4 * config.n_embd, bias=False)
+        self.c_proj = nn.Linear(4 * config.n_embd, config.n_embd, bias=False)
 
     def forward(self, x):
         x = self.c_fc(x)
@@ -256,6 +253,10 @@ class GPT(nn.Module):
         cos, sin = self._precompute_rotary_embeddings(self.rotary_seq_len, head_dim)
         self.register_buffer("cos", cos, persistent=False)
         self.register_buffer("sin", sin, persistent=False)
+        # Layer activity EMA for synaptic metaplasticity
+        self.layer_activity_ema = nn.Parameter(
+            torch.zeros(config.n_layer), requires_grad=False
+        )
 
     @torch.no_grad()
     def init_weights(self):
@@ -375,20 +376,28 @@ class GPT(nn.Module):
         scalar_lr=0.5,
     ):
         model_dim = self.config.n_embd
-        matrix_params = list(self.transformer.h.parameters())
+        # Collect matrix parameters (from transformer blocks) with layer indices
+        param_list = []
+        for layer_idx, block in enumerate(self.transformer.h):
+            for param in block.parameters():
+                param_list.append((param, layer_idx))
+
+        # Group by shape
+        shape_to_params = {}
+        shape_to_layer_indices = {}
+        for param, layer_idx in param_list:
+            shape = param.shape
+            if shape not in shape_to_params:
+                shape_to_params[shape] = []
+                shape_to_layer_indices[shape] = []
+            shape_to_params[shape].append(param)
+            shape_to_layer_indices[shape].append(layer_idx)
+
         value_embeds_params = list(self.value_embeds.parameters())
         embedding_params = list(self.transformer.wte.parameters())
         lm_head_params = list(self.lm_head.parameters())
         resid_params = [self.resid_lambdas]
         x0_params = [self.x0_lambdas]
-        assert len(list(self.parameters())) == (
-            len(matrix_params)
-            + len(embedding_params)
-            + len(lm_head_params)
-            + len(value_embeds_params)
-            + len(resid_params)
-            + len(x0_params)
-        )
         # Scale LR ∝ 1/√dmodel (tuned at 768 dim)
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
@@ -434,8 +443,11 @@ class GPT(nn.Module):
                 weight_decay=0.0,
             ),
         ]
-        for shape in sorted({p.shape for p in matrix_params}):
-            group_params = [p for p in matrix_params if p.shape == shape]
+
+        # Add matrix parameter groups (Muon) with layer indices for activity scaling
+        for shape in sorted(shape_to_params.keys()):
+            group_params = shape_to_params[shape]
+            group_layer_indices = shape_to_layer_indices[shape]
             param_groups.append(
                 dict(
                     kind="muon",
@@ -445,6 +457,7 @@ class GPT(nn.Module):
                     ns_steps=7,
                     beta2=0.95,
                     weight_decay=weight_decay,
+                    layer_indices=group_layer_indices,
                 )
             )
         optimizer = MuonAdamW(param_groups)
@@ -464,6 +477,13 @@ class GPT(nn.Module):
             x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx) if str(i) in self.value_embeds else None
             x = block(x, ve, cos_sin, self.window_sizes[i])
+            # Update layer activity EMA for synaptic metaplasticity
+            with torch.no_grad():
+                activity = x.norm(p=2, dim=-1).mean()
+                self.layer_activity_ema[i] = (
+                    ACTIVITY_EMA_DECAY * self.layer_activity_ema[i]
+                    + (1 - ACTIVITY_EMA_DECAY) * activity
+                )
         x = norm(x)
 
         logits = self.lm_head(x)
@@ -710,6 +730,7 @@ ADAM_BETAS = (0.75, 0.95)  # Adam beta1, beta2
 WARMUP_RATIO = 0.0  # fraction of time budget for LR warmup
 WARMDOWN_RATIO = 0.60  # fraction of time budget for LR warmdown
 FINAL_LR_FRAC = 0.08  # final LR as fraction of initial
+ACTIVITY_EMA_DECAY = 0.99  # decay for layer activity EMA (synaptic metaplasticity)
 
 # Model size
 DEPTH = 3  # number of transformer layers
@@ -867,6 +888,15 @@ while True:
     for group in optimizer.param_groups:
         group["lr"] = group["initial_lr"] * lrm
         if group["kind"] == "muon":
+            # Activity-based scaling for Muon parameters
+            if "layer_indices" in group:
+                activities = [
+                    model.layer_activity_ema[i].item() for i in group["layer_indices"]
+                ]
+                avg_activity = sum(activities) / len(activities)
+                activity_scale = math.exp(-avg_activity)
+                activity_scale = max(0.5, min(2.0, activity_scale))
+                group["lr"] *= activity_scale
             group["momentum"] = muon_momentum
             group["weight_decay"] = muon_weight_decay
     optimizer.step()

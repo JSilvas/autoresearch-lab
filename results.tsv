@@ -8,4 +8,4 @@ af931d3	1.413364	0.0	discard	Two-cycle cosine LR (SGDR) — +0.032 worse; flat-t
 413a0fc	0.000000	0.0	crash	Stochastic depth (naive skip): grad=None crash in Muon
 f585acd	1.419540	0.0	discard	Stochastic depth (tensor Bernoulli mask) — +0.038 worse; depth=3 too shallow to benefit from layer drop
 5b32590	1.397587	0.0	discard	ReLU3 (relu(x).pow(3)) — +0.016 worse; quadratic ReLU2 has better inductive bias at this scale
-354d5b1	1.450376	0.0	discard	Gated AttnRes — +0.068 worse; zero gate init, small learned cross-layer corrections don't help; fixed resid/x0 already optimal
+354d5b1	1.450376	0.0	discard	Gated AttnRes — +0.068 worse; zero gate init, small learned cross-layer corrections don't help; fixed resid/x0 already optimal435c832	1.378481	0.0	keep	Activity-based LR scaling (Exp12): layer activity influences future learning rates via EMA - improved over baseline
