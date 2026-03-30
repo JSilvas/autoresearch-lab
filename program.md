@@ -23,7 +23,7 @@ Once you get confirmation, kick off the experimentation.
 
 Every experiment cycle is an evolving Markdown file in /notes/. Treat the TSV as your Database (metrics for machines) and the Zettelkasten as your Journal (reasoning for humans).
 
-1. Draft: Before established the baseline or starting a new cycle, create YYYYMMDDHHMM_slug.md (e.g., 202403151430_baseline.md).
+1. Draft: Before establishing the baseline or starting a new cycle, create YYYYMMDDHHMM_slug.md (e.g., 202403151430_baseline.md).
    - Content: Define Hypothesis, Target Metric, and Code Change.
 2. Execute: Modify train.py strictly based on this file.
 3. Finalize: Post-run, append the Result (val_bpb), the Git Hash, and a 1-sentence Verdict. This note is now a Permanent Record.
