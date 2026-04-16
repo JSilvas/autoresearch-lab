@@ -21,4 +21,7 @@ dev/
 
 # Checkpoints and logs
 checkpoint*
-run.log
+*.log
+
+# macOS
+.DS_Store
