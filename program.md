@@ -21,16 +21,39 @@ Once you get confirmation, kick off the experimentation.
 
 ## Capturing Your Process (Atomic Notes)
 
-Every experiment cycle is an evolving Markdown file in /notes/. Treat the TSV as your Database (metrics for machines) and the Zettelkasten as your Journal (reasoning for humans).
+Every experiment cycle produces an evolving Markdown file in `notes/` at the **repo root** (not relative to the worktree). Treat the TSV as your Database (metrics for machines) and the Zettelkasten as your Journal (reasoning for humans).
 
-1. Draft: Before established the baseline or starting a new cycle, create YYYYMMDDHHMM_slug.md (e.g., 202403151430_baseline.md).
-   - Content: Define Hypothesis, Target Metric, and Code Change.
-2. Execute: Modify train.py strictly based on this file.
-3. Finalize: Post-run, append the Result (val_bpb), the Git Hash, and a 1-sentence Verdict. This note is now a Permanent Record.
-4. Sync: Log the atomic metrics to results.tsv.
-5. Index & Compress: Link the note in index.md. Every 5 cycles, summarize the last 5 notes into an "Insight Note" and move the individual atomics to /notes/archive/.
+Notes are tracked in git. The invariant that keeps them safe: **notes commits are always separate from train.py commits**, so a discard reset never touches them.
 
-**Safe Reset Rule**: If an experiment fails, you must revert train.py using git checkout HEAD -- train.py. Never use git reset --hard on the entire directory, as /notes/ must persist across all cycles and resets.
+**Per-cycle steps:**
+
+1. **Draft** (before touching train.py): Create `notes/YYYYMMDDHHMM_slug.md` with Hypothesis, Target Metric, and Code Change. Commit it immediately — this anchors the note in history before the experiment:
+   ```
+   git add notes/YYYYMMDDHHMM_slug.md
+   git commit -m "Note: SLUG pre-run"
+   ```
+
+2. **Execute**: Modify `train.py` based on the note, then commit:
+   ```
+   git commit train.py -m "ExpN: description"
+   ```
+
+3. **Finalize**: Post-run, append the Result (val_bpb), Git Hash, and a 1-sentence Verdict to the note.
+
+4. **Commit outcome** — always, regardless of keep or discard, and always AFTER any reset:
+   ```
+   git add notes/YYYYMMDDHHMM_slug.md results.tsv
+   git commit -m "Log SLUG [keep|discard]"
+   ```
+
+5. **Index & Compress**: Link the note in `notes/index.md`. Every 5 cycles, summarize the last 5 notes into an `insight_NN_expXtoY.md` file.
+
+**Safe Reset Rule**: On a discard, reset only the train.py experiment commit — the pre-run note commit immediately below it is unaffected:
+```
+git reset HEAD~1        # removes the train.py commit; pre-run note commit stays
+git checkout -- train.py  # discard working tree changes to train.py
+```
+Then proceed to Finalize (step 3) and Commit outcome (step 4) as normal. Never use `git reset --hard` — it wipes the working tree.
 
 
 ## Experimentation
@@ -108,15 +131,20 @@ The experiment runs on a dedicated branch (e.g. `autoresearch/mar5` or `autorese
 
 LOOP FOREVER:
 
-1. Look at the git state: the current branch/commit we're on
-2. Tune `train.py` with an experimental idea by directly hacking the code.
-3. git commit
-4. Run the experiment: `uv run train.py > run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context)
-5. Read out the results: `grep "^val_bpb:\|^peak_vram_mb:" run.log`
-6. If the grep output is empty, the run crashed. Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
-7. Record the results in the tsv
-8. If val_bpb improved (lower), you "advance" the branch, keeping the git commit
-9. If val_bpb is equal or worse, you git reset back to where you started
+1. Look at the git state: the current branch/commit we're on.
+2. Draft `notes/YYYYMMDDHHMM_slug.md` with Hypothesis, Target Metric, and Code Change.
+3. Commit the pre-run note: `git add notes/SLUG.md && git commit -m "Note: SLUG pre-run"`
+4. Tune `train.py` with the experimental idea.
+5. Commit train.py: `git commit train.py -m "ExpN: description"`
+6. Run the experiment: `uv run train.py > run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context)
+7. Read out the results: `grep "^val_bpb:\|^peak_vram_mb:" run.log`
+8. If the grep output is empty, the run crashed. Run `tail -n 50 run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
+9. Finalize the note (append val_bpb, git hash, verdict) and update `results.tsv`.
+10. If val_bpb improved (lower): commit outcome and advance.
+    `git add notes/SLUG.md results.tsv && git commit -m "Log SLUG keep"`
+11. If val_bpb is equal or worse: reset the train.py commit, then commit outcome.
+    `git reset HEAD~1 && git checkout -- train.py`
+    `git add notes/SLUG.md results.tsv && git commit -m "Log SLUG discard"`
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
 
